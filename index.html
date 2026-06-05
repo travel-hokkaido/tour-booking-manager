@@ -25,33 +25,26 @@
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:var(--font);background:var(--bg);color:var(--text-primary);min-height:100vh}
 .app{max-width:1320px;margin:0 auto;padding:28px 24px 80px}
-
 .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
 .header h1{font-size:26px;font-weight:700;letter-spacing:-.5px}
 .header h1 span{font-weight:400;color:var(--text-secondary);font-size:15px;margin-left:10px}
 .header-btns{display:flex;gap:8px;align-items:center}
-
 .btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border:none;border-radius:var(--radius-sm);font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;font-family:var(--font)}
-.btn-primary{background:var(--text-primary);color:#fff}
-.btn-primary:hover{background:#333}
-.btn-secondary{background:var(--surface);color:var(--text-primary);border:1px solid var(--border)}
-.btn-secondary:hover{background:var(--surface-alt)}
+.btn-primary{background:var(--text-primary);color:#fff}.btn-primary:hover{background:#333}
+.btn-secondary{background:var(--surface);color:var(--text-primary);border:1px solid var(--border)}.btn-secondary:hover{background:var(--surface-alt)}
 .btn-sm{padding:6px 12px;font-size:12px}
-
 .stats{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:24px}
 .stat{background:var(--surface);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);border:1px solid var(--border)}
 .stat-label{font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:6px;display:flex;align-items:center;gap:5px}
 .stat-val{font-size:28px;font-weight:700;letter-spacing:-1px}
 .stat-sub{font-size:11px;color:var(--text-muted);margin-top:3px}
 .stat-dot{width:7px;height:7px;border-radius:50%;display:inline-block}
-
 .toolbar{display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap}
 .search-box{flex:1;min-width:180px;position:relative}
 .search-box input{width:100%;padding:8px 12px 8px 34px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;background:var(--surface);font-family:var(--font);outline:none}
 .search-box input:focus{border-color:var(--text-secondary)}
 .search-box svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text-muted)}
 .toolbar select{padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;background:var(--surface);font-family:var(--font);outline:none;cursor:pointer}
-
 .group-list{display:flex;flex-direction:column;gap:16px}
 .group-card{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--border);overflow:hidden;transition:box-shadow .15s}
 .group-card:hover{box-shadow:var(--shadow-lg)}
@@ -91,13 +84,11 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-primary);min-
 .item-table tbody tr.row-cancelled .tag{opacity:.7}
 .status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px}
 .dot-confirmed{background:var(--status-confirmed)}.dot-pending{background:var(--status-pending)}.dot-cancelled{background:var(--status-cancelled)}
-
 .editable{cursor:pointer;border-radius:4px;padding:2px 4px;margin:-2px -4px;transition:background .1s;position:relative}
 .editable:hover{background:rgba(0,0,0,.04)}
 .editable::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;background:var(--text-muted);opacity:0;transition:opacity .1s}
 .editable:hover::after{opacity:.3}
 .inline-input{border:1px solid var(--text-secondary);border-radius:4px;padding:4px 8px;font-size:13px;font-family:var(--font);outline:none;background:#fff;box-shadow:0 0 0 3px rgba(26,22,18,.06);width:100%;min-width:60px}
-
 .cell-rel{position:relative}
 .cell-dropdown{position:absolute;top:100%;left:0;margin-top:4px;z-index:50;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);box-shadow:var(--shadow-lg);min-width:120px;overflow:hidden;opacity:0;pointer-events:none;transform:translateY(-4px);transition:opacity .12s,transform .12s}
 .cell-dropdown.open{opacity:1;pointer-events:all;transform:translateY(0)}
@@ -108,33 +99,30 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-primary);min-
 .cell-dropdown button.pending{color:var(--status-pending)}
 .cell-dropdown button.cancelled{color:var(--status-cancelled)}
 .status-text{font-size:12px;font-weight:600;display:inline-flex;align-items:center;cursor:pointer}
-.status-text.confirmed{color:var(--status-confirmed)}
-.status-text.pending{color:var(--status-pending)}
-.status-text.cancelled{color:var(--status-cancelled)}
+.status-text.confirmed{color:var(--status-confirmed)}.status-text.pending{color:var(--status-pending)}.status-text.cancelled{color:var(--status-cancelled)}
 .item-actions{display:flex;gap:2px}
 .progress-bar{display:flex;height:4px;border-radius:2px;overflow:hidden;background:var(--border);width:80px}
-.progress-fill{height:100%}
-.progress-fill.confirmed{background:var(--status-confirmed)}
-.progress-fill.pending{background:var(--status-pending)}
-.group-field-edit{cursor:pointer;border-radius:4px;transition:background .1s}
-.group-field-edit:hover{background:rgba(0,0,0,.05)}
-
+.progress-fill{height:100%}.progress-fill.confirmed{background:var(--status-confirmed)}.progress-fill.pending{background:var(--status-pending)}
+.group-field-edit{cursor:pointer;border-radius:4px;transition:background .1s}.group-field-edit:hover{background:rgba(0,0,0,.05)}
 .drive-btn{width:30px;height:30px;border:none;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:all .12s;font-size:14px}
-.drive-btn.linked{background:#E8F5E9;color:#2D6A4F}
-.drive-btn.linked:hover{background:#C8E6C9}
-.drive-btn.unlinked{background:var(--surface-alt);color:var(--text-muted)}
-.drive-btn.unlinked:hover{background:var(--border);color:var(--text-secondary)}
-.invoice-link{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:6px;color:#2D6A4F;background:#E8F5E9;transition:background .1s;text-decoration:none}
-.invoice-link:hover{background:#C8E6C9}
-.invoice-add{width:28px;height:28px;border:1px dashed var(--border);border-radius:6px;background:none;cursor:pointer;color:var(--text-muted);font-size:16px;display:inline-flex;align-items:center;justify-content:center;transition:all .12s}
-.invoice-add:hover{border-color:var(--text-secondary);color:var(--text-secondary);background:var(--surface-alt)}
+.drive-btn.linked{background:#E8F5E9;color:#2D6A4F}.drive-btn.linked:hover{background:#C8E6C9}
+.drive-btn.unlinked{background:var(--surface-alt);color:var(--text-muted)}.drive-btn.unlinked:hover{background:var(--border);color:var(--text-secondary)}
+.invoice-link{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:6px;color:#2D6A4F;background:#E8F5E9;transition:background .1s;text-decoration:none}.invoice-link:hover{background:#C8E6C9}
+.invoice-add{width:28px;height:28px;border:1px dashed var(--border);border-radius:6px;background:none;cursor:pointer;color:var(--text-muted);font-size:16px;display:inline-flex;align-items:center;justify-content:center;transition:all .12s}.invoice-add:hover{border-color:var(--text-secondary);color:var(--text-secondary);background:var(--surface-alt)}
 .room-info{display:flex;align-items:center;gap:6px;margin-top:4px}
-.room-tag{font-size:11px;color:var(--accent-hotel);background:var(--accent-hotel-light);padding:1px 7px;border-radius:10px;font-weight:600;cursor:pointer}
-.room-tag:hover{background:#b7e4c7}
-.room-count{font-size:11px;color:var(--text-secondary);font-weight:600;cursor:pointer;padding:1px 4px;border-radius:4px}
-.room-count:hover{background:rgba(0,0,0,.05)}
+.room-tag{font-size:11px;color:var(--accent-hotel);background:var(--accent-hotel-light);padding:1px 7px;border-radius:10px;font-weight:600;cursor:pointer}.room-tag:hover{background:#b7e4c7}
+.room-count{font-size:11px;color:var(--text-secondary);font-weight:600;cursor:pointer;padding:1px 4px;border-radius:4px}.room-count:hover{background:rgba(0,0,0,.05)}
 .memo-cell{font-size:12px;color:var(--text-secondary);max-width:160px;display:inline-block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-
+.group-memo-btn{border:none;background:var(--surface-alt);width:26px;height:26px;border-radius:6px;cursor:pointer;font-size:13px;display:inline-flex;align-items:center;justify-content:center;transition:all .12s;opacity:.5}
+.group-memo-btn:hover{opacity:1;background:var(--border)}
+.group-memo-btn.has-memo{background:#D8F3DC;opacity:1}.group-memo-btn.has-memo:hover{background:#b7e4c7}
+.memo-popup{position:fixed;z-index:1100;width:320px;background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow-lg);padding:16px;opacity:0;pointer-events:none;transform:translateY(-4px);transition:opacity .15s,transform .15s}
+.memo-popup.open{opacity:1;pointer-events:all;transform:translateY(0)}
+.memo-popup-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.memo-popup-head span{font-size:13px;font-weight:700}
+.memo-popup textarea{width:100%;min-height:100px;border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px;font-size:13px;font-family:var(--font);outline:none;resize:vertical;line-height:1.6;color:var(--text-primary);background:var(--surface)}
+.memo-popup textarea:focus{border-color:var(--text-secondary)}
+.memo-popup-foot{display:flex;justify-content:flex-end;gap:6px;margin-top:10px}
 .cal-popup{position:fixed;z-index:1100;background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow-lg);padding:16px;width:280px;opacity:0;pointer-events:none;transform:translateY(-4px);transition:opacity .15s,transform .15s}
 .cal-popup.open{opacity:1;pointer-events:all;transform:translateY(0)}
 .cal-popup-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
@@ -149,15 +137,10 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-primary);min-
 .cal-grid .cal-cell.selected{background:var(--text-primary);color:#fff;font-weight:700}
 .cal-grid .cal-cell.other-month{color:var(--text-muted);opacity:.4}
 .cal-backdrop{position:fixed;top:0;left:0;right:0;bottom:0;z-index:1099}
-
-.memo-popup{position:fixed;z-index:1100;width:320px;background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow-lg);padding:16px;opacity:0;pointer-events:none;transform:translateY(-4px);transition:opacity .15s,transform .15s}
-.memo-popup.open{opacity:1;pointer-events:all;transform:translateY(0)}
-.memo-popup-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-.memo-popup-head span{font-size:13px;font-weight:700}
-.memo-popup textarea{width:100%;min-height:100px;border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px;font-size:13px;font-family:var(--font);outline:none;resize:vertical;line-height:1.6;color:var(--text-primary);background:var(--surface)}
-.memo-popup textarea:focus{border-color:var(--text-secondary)}
-.memo-popup-foot{display:flex;justify-content:flex-end;gap:6px;margin-top:10px}
-
+.confirm-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(26,22,18,.4);backdrop-filter:blur(4px);z-index:2000;display:flex;align-items:center;justify-content:center}
+.confirm-box{background:var(--surface);border-radius:14px;padding:28px;width:380px;max-width:90vw;box-shadow:var(--shadow-lg);text-align:center}
+.confirm-box p{font-size:15px;font-weight:500;line-height:1.5;margin-bottom:20px}
+.confirm-btns{display:flex;gap:10px;justify-content:center}
 .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(26,22,18,.4);backdrop-filter:blur(4px);z-index:1000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
 .modal-overlay.active{opacity:1;pointer-events:all}
 .modal{background:var(--surface);border-radius:16px;width:560px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-lg);transform:translateY(8px);transition:transform .2s}
@@ -167,134 +150,95 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-primary);min-
 .modal-x{width:30px;height:30px;border:none;background:var(--surface-alt);border-radius:8px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:var(--text-secondary)}
 .modal-body{padding:18px 26px 26px}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
-.form-row.full{grid-template-columns:1fr}
-.form-row.tri{grid-template-columns:1fr 1fr 1fr}
+.form-row.full{grid-template-columns:1fr}.form-row.tri{grid-template-columns:1fr 1fr 1fr}
 .fg{display:flex;flex-direction:column;gap:4px}
 .fg label{font-size:11px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.3px}
 .fg input,.fg select,.fg textarea{padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:var(--font);outline:none;background:var(--surface);transition:border-color .15s}
 .fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--text-secondary)}
 .fg textarea{resize:vertical;min-height:50px}
 .modal-foot{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
-
-.empty{text-align:center;padding:48px 20px;color:var(--text-muted)}
-.empty p{font-size:14px;margin-top:6px}
-.past-toggle{white-space:nowrap}
-.past-toggle.active{background:var(--text-primary);color:#fff;border-color:var(--text-primary)}
+.empty{text-align:center;padding:48px 20px;color:var(--text-muted)}.empty p{font-size:14px;margin-top:6px}
+.past-toggle{white-space:nowrap}.past-toggle.active{background:var(--text-primary);color:#fff;border-color:var(--text-primary)}
 .past-count{background:var(--surface-alt);color:var(--text-secondary);font-size:11px;font-weight:700;padding:1px 7px;border-radius:10px;margin-left:4px}
 .past-toggle.active .past-count{background:rgba(255,255,255,.2);color:#fff}
-.group-card.past{opacity:.65}
-.group-card.past .group-header{background:var(--surface-alt)}
-.past-label{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;background:#E8E4DE;color:var(--text-secondary);margin-left:8px}
-.past-divider{display:flex;align-items:center;gap:12px;margin:24px 0 12px}
-.past-divider span{font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.4px;white-space:nowrap}
-.past-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.group-card.past{opacity:.65}.group-card.past .group-header{background:var(--surface-alt)}
 .group-card.group-cancelled{border-color:var(--status-cancelled-bg)}
 .group-card.group-cancelled .group-header{background:var(--status-cancelled-bg)}
 .group-card.group-cancelled .group-name{color:var(--status-cancelled)}
 .group-cancelled-label{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;background:var(--status-cancelled-bg);color:var(--status-cancelled);margin-left:8px}
-
+.past-label{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;background:#E8E4DE;color:var(--text-secondary);margin-left:8px}
+.past-divider{display:flex;align-items:center;gap:12px;margin:24px 0 12px}
+.past-divider span{font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.4px;white-space:nowrap}
+.past-divider::after{content:'';flex:1;height:1px;background:var(--border)}
 .sync-badge{font-size:11px;padding:4px 10px;border-radius:12px;font-weight:600;display:inline-flex;align-items:center;gap:4px}
-.sync-badge.online{background:#D8F3DC;color:#2D6A4F}
-.sync-badge.offline{background:#FDE8CC;color:#D4700A}
+.sync-badge.online{background:#D8F3DC;color:#2D6A4F}.sync-badge.offline{background:#FDE8CC;color:#D4700A}
 .sync-dot{width:6px;height:6px;border-radius:50%;display:inline-block}
-.sync-dot.online{background:#2D6A4F;animation:pulse 2s infinite}
-.sync-dot.offline{background:#D4700A}
+.sync-dot.online{background:#2D6A4F;animation:pulse 2s infinite}.sync-dot.offline{background:#D4700A}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-
 .setup-box{max-width:480px;margin:80px auto;background:var(--surface);border-radius:var(--radius);padding:32px;box-shadow:var(--shadow-lg);border:1px solid var(--border)}
 .setup-box h2{font-size:22px;margin-bottom:6px}
 .setup-box p{font-size:13px;color:var(--text-secondary);margin-bottom:20px;line-height:1.6}
 .setup-box .fg{margin-bottom:14px}
 .setup-box code{background:var(--surface-alt);padding:2px 6px;border-radius:4px;font-size:12px}
-
 @media(max-width:1000px){.stats{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:700px){.stats{grid-template-columns:repeat(2,1fr)}.app{padding:16px 12px 80px}.header{flex-direction:column;align-items:flex-start;gap:10px}.group-header{flex-wrap:wrap}.group-tags{order:3;width:100%}.form-row,.form-row.tri{grid-template-columns:1fr}}
 @media print{.header-btns,.toolbar,.icon-btn,.item-actions,.items-header button{display:none!important}.group-card{box-shadow:none;break-inside:avoid}.group-body{display:block!important}.stat{box-shadow:none;border:1px solid #ddd}}
 </style>
 </head>
 <body>
+<div id="passwordScreen" style="display:none"><div class="app"><div class="setup-box" style="text-align:center">
+  <h2>🔒 Tour Booking Manager</h2><p>Enter the password to access the dashboard.</p>
+  <div class="fg" style="text-align:left"><label>Password</label><input type="password" id="pwInput" placeholder="Enter password" onkeydown="if(event.key==='Enter')checkPassword()"></div>
+  <div style="margin-top:16px"><button class="btn btn-primary" onclick="checkPassword()" style="width:100%">Log in</button></div>
+  <p id="pwError" style="color:var(--status-cancelled);margin-top:12px;display:none">Incorrect password</p>
+</div></div></div>
 
-<!-- Setup Screen -->
-<div id="setupScreen" style="display:none">
-<div class="app">
-  <div class="setup-box">
-    <h2>Connect to Supabase</h2>
-    <p>Enter your Supabase project credentials to enable real-time shared access. Find these in your Supabase dashboard under <code>Settings → API</code>.</p>
-    <div class="fg"><label>Supabase URL</label><input type="text" id="cfgUrl" placeholder="https://xxxxx.supabase.co"></div>
-    <div class="fg"><label>Anon Key</label><input type="text" id="cfgKey" placeholder="eyJhbGciOi..."></div>
-    <div style="margin-top:20px;display:flex;gap:8px">
-      <button class="btn btn-primary" onclick="connectSupabase()">Connect</button>
-    </div>
-    <p id="cfgError" style="color:var(--status-cancelled);margin-top:12px;display:none"></p>
-  </div>
-</div>
-</div>
+<div id="setupScreen" style="display:none"><div class="app"><div class="setup-box">
+  <h2>Connect to Supabase</h2><p>Enter your Supabase project credentials. Find these in <code>Settings → Data API</code>.</p>
+  <div class="fg"><label>Supabase URL</label><input type="text" id="cfgUrl" placeholder="https://xxxxx.supabase.co"></div>
+  <div class="fg"><label>Anon Key</label><input type="text" id="cfgKey" placeholder="eyJhbGciOi..."></div>
+  <div style="margin-top:20px"><button class="btn btn-primary" onclick="connectSupabase()">Connect</button></div>
+  <p id="cfgError" style="color:var(--status-cancelled);margin-top:12px;display:none"></p>
+</div></div></div>
 
-<!-- Main App -->
-<div id="mainApp" style="display:none">
-<div class="app">
+<div id="mainApp" style="display:none"><div class="app">
   <div class="header">
     <h1 id="pageTitle"></h1>
     <div class="header-btns">
       <span class="sync-badge" id="syncBadge"><span class="sync-dot"></span><span></span></span>
-      <button class="btn btn-primary" id="btnNewGroup" onclick="openGroupModal()">
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        <span>New Group</span>
-      </button>
+      <button class="btn btn-primary" onclick="openGroupModal()"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>New Group</span></button>
     </div>
   </div>
   <div class="stats" id="stats"></div>
   <div class="toolbar">
-    <div class="search-box">
-      <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-      <input type="text" id="searchInput" placeholder="Search groups, contacts, venues..." oninput="render()">
-    </div>
-    <select id="statusFilter" onchange="render()">
-      <option value="all">All Statuses</option>
-      <option value="has-pending">Has Pending</option>
-      <option value="all-confirmed">All Confirmed</option>
-      <option value="has-cancelled">Has Cancelled</option>
-    </select>
+    <div class="search-box"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><input type="text" id="searchInput" placeholder="Search groups, contacts, venues..." oninput="render()"></div>
+    <select id="statusFilter" onchange="render()"><option value="all">All Statuses</option><option value="has-pending">Has Pending</option><option value="all-confirmed">All Confirmed</option><option value="has-cancelled">Has Cancelled</option></select>
     <select id="monthFilter" onchange="render()"><option value="all">All Months</option></select>
-    <select id="sortOrder" onchange="render()">
-      <option value="start-asc">Start date ↑</option>
-      <option value="start-desc">Start date ↓</option>
-      <option value="end-asc">End date ↑</option>
-      <option value="end-desc">End date ↓</option>
-      <option value="name-asc">Name A→Z</option>
-      <option value="name-desc">Name Z→A</option>
-      <option value="created-desc">Newest first</option>
-      <option value="created-asc">Oldest first</option>
-    </select>
-    <button class="btn btn-secondary past-toggle" id="pastToggle" onclick="togglePast()">
-      <span id="pastToggleLabel">Show Past Tours</span>
-      <span class="past-count" id="pastCount"></span>
-    </button>
+    <select id="sortOrder" onchange="render()"><option value="start-asc">Start date ↑</option><option value="start-desc">Start date ↓</option><option value="end-asc">End date ↑</option><option value="end-desc">End date ↓</option><option value="name-asc">Name A→Z</option><option value="name-desc">Name Z→A</option><option value="created-desc">Newest first</option><option value="created-asc">Oldest first</option></select>
+    <button class="btn btn-secondary past-toggle" id="pastToggle" onclick="togglePast()"><span id="pastToggleLabel">Show Past Tours</span><span class="past-count" id="pastCount"></span></button>
   </div>
   <div class="group-list" id="groupList"></div>
-</div>
-</div>
+</div></div>
 
-<div class="modal-overlay" id="groupModalOverlay" onclick="if(event.target===this)closeGroupModal()">
-  <div class="modal"><div class="modal-head"><h2 id="groupModalTitle"></h2><button class="modal-x" onclick="closeGroupModal()">✕</button></div><div class="modal-body" id="groupModalBody"></div></div>
-</div>
-<div class="modal-overlay" id="itemModalOverlay" onclick="if(event.target===this)closeItemModal()">
-  <div class="modal"><div class="modal-head"><h2 id="itemModalTitle"></h2><button class="modal-x" onclick="closeItemModal()">✕</button></div><div class="modal-body" id="itemModalBody"></div></div>
-</div>
+<div class="modal-overlay" id="groupModalOverlay" onclick="if(event.target===this)closeGroupModal()"><div class="modal"><div class="modal-head"><h2 id="groupModalTitle"></h2><button class="modal-x" onclick="closeGroupModal()">✕</button></div><div class="modal-body" id="groupModalBody"></div></div></div>
+<div class="modal-overlay" id="itemModalOverlay" onclick="if(event.target===this)closeItemModal()"><div class="modal"><div class="modal-head"><h2 id="itemModalTitle"></h2><button class="modal-x" onclick="closeItemModal()">✕</button></div><div class="modal-body" id="itemModalBody"></div></div></div>
 <div class="cal-backdrop" id="calBackdrop" style="display:none" onclick="closeCal()"></div>
 <div class="cal-popup" id="calPopup"><div class="cal-popup-header"><button onclick="calNav(-1)">◀</button><span class="cal-title" id="calTitle"></span><button onclick="calNav(1)">▶</button></div><div class="cal-grid" id="calGrid"></div></div>
 <div class="cal-backdrop" id="memoBackdrop" style="display:none" onclick="closeMemoPopup()"></div>
 <div class="memo-popup" id="memoPopup"><div class="memo-popup-head"><span>Memo</span><button class="modal-x" onclick="closeMemoPopup()" style="width:24px;height:24px;font-size:13px">✕</button></div><textarea id="memoTextarea"></textarea><div class="memo-popup-foot"><button class="btn btn-sm btn-primary" onclick="saveMemoPopup()">Save</button></div></div>
+<div id="confirmContainer"></div>
 
 <script>
 const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const DAYS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const TL={hotel:'Hotel',activity:'Activity',restaurant:'Restaurant',transport:'Transport',etc:'Other'};
 const SL={confirmed:'Confirmed',pending:'Pending',cancelled:'Cancelled'};
-const TYPE_KEYS=Object.keys(TL), STATUS_KEYS=Object.keys(SL);
+const TYPE_KEYS=Object.keys(TL),STATUS_KEYS=Object.keys(SL);
+const SITE_PASSWORD='Hokkaido2025@';
+const DSVG={linked:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4.433 22l-3.4-5.89L9.033 2h6.8L4.433 22z" fill="#4285F4"/><path d="M20.967 22H7.567l3.4-5.89h13.4L20.967 22z" fill="#34A853"/><path d="M1.033 16.11L4.433 22l7.534-13.04L8.567 2 1.033 16.11z" fill="#FBBC04"/></svg>',unlinked:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4.433 22l-3.4-5.89L9.033 2h6.8L4.433 22z" fill="currentColor" opacity=".4"/><path d="M20.967 22H7.567l3.4-5.89h13.4L20.967 22z" fill="currentColor" opacity=".3"/><path d="M1.033 16.11L4.433 22l7.534-13.04L8.567 2 1.033 16.11z" fill="currentColor" opacity=".5"/></svg>'};
+const ISVG='<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="currentColor" stroke-width="2"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" stroke="currentColor" stroke-width="2"/></svg>';
 
-let db=null, groups=[], openGroups=new Set(), showPast=false;
-
+let db=null,groups=[],openGroups=new Set(),showPast=false;
 function todayStr(){return new Date().toISOString().split('T')[0]}
 function fmtDate(s){if(!s)return'-';const dt=new Date(s+'T00:00:00');return`${MONTHS[dt.getMonth()]} ${dt.getDate()} (${DAYS[dt.getDay()]})`}
 function fmtMonth(y,m){return`${MONTHS[m]} ${y}`}
@@ -302,199 +246,62 @@ function esc(s){const d=document.createElement('div');d.textContent=s;return d.i
 function isGroupPast(g){return g.end_date&&g.end_date<todayStr()}
 function isGroupCancelled(g){return g.items&&g.items.length>0&&g.items.every(i=>i.status==='cancelled')}
 
+/* ─── Password ─── */
+function checkPassword(){const pw=document.getElementById('pwInput').value;if(pw===SITE_PASSWORD){sessionStorage.setItem('pw_ok','1');document.getElementById('passwordScreen').style.display='none';document.getElementById('pwError').style.display='none';initApp()}else{document.getElementById('pwError').style.display='block';document.getElementById('pwInput').value='';document.getElementById('pwInput').focus()}}
+
 /* ─── Supabase ─── */
-async function connectSupabase(){
-  const url=document.getElementById('cfgUrl').value.trim();
-  const key=document.getElementById('cfgKey').value.trim();
-  if(!url||!key){showCfgError('Please enter both URL and Key.');return}
-  try{
-    db=window.supabase.createClient(url,key);
-    const{error}=await db.from('groups').select('id').limit(1);
-    if(error) throw error;
-    localStorage.setItem('sb_url',url);
-    localStorage.setItem('sb_key',key);
-    document.getElementById('setupScreen').style.display='none';
-    document.getElementById('mainApp').style.display='block';
-    setSyncStatus(true);
-    await loadAll();
-    subscribeRealtime();
-  }catch(e){showCfgError('Connection failed: '+e.message)}
-}
-
+async function connectSupabase(){const url=document.getElementById('cfgUrl').value.trim(),key=document.getElementById('cfgKey').value.trim();if(!url||!key){showCfgError('Please enter both URL and Key.');return}try{db=window.supabase.createClient(url,key);const{error}=await db.from('groups').select('id').limit(1);if(error)throw error;localStorage.setItem('sb_url',url);localStorage.setItem('sb_key',key);document.getElementById('setupScreen').style.display='none';document.getElementById('mainApp').style.display='block';setSyncStatus(true);await loadAll();subscribeRealtime()}catch(e){showCfgError('Connection failed: '+e.message)}}
 function showCfgError(msg){const el=document.getElementById('cfgError');el.textContent=msg;el.style.display='block'}
+function setSyncStatus(online){const b=document.getElementById('syncBadge');b.className='sync-badge '+(online?'online':'offline');b.innerHTML=`<span class="sync-dot ${online?'online':'offline'}"></span><span>${online?'Live':'Offline'}</span>`}
+function subscribeRealtime(){db.channel('all-changes').on('postgres_changes',{event:'*',schema:'public',table:'groups'},()=>loadAll()).on('postgres_changes',{event:'*',schema:'public',table:'items'},()=>loadAll()).subscribe()}
 
-function setSyncStatus(online){
-  const b=document.getElementById('syncBadge');
-  b.className='sync-badge '+(online?'online':'offline');
-  b.innerHTML=`<span class="sync-dot ${online?'online':'offline'}"></span><span>${online?'Live':'Offline'}</span>`;
-}
-
-function subscribeRealtime(){
-  db.channel('all-changes')
-    .on('postgres_changes',{event:'*',schema:'public',table:'groups'},()=>loadAll())
-    .on('postgres_changes',{event:'*',schema:'public',table:'items'},()=>loadAll())
-    .subscribe();
-}
-
-async function loadAll(){
-  const{data:gs}=await db.from('groups').select('*').order('id');
-  const{data:its}=await db.from('items').select('*').order('id');
-  groups=(gs||[]).map(g=>({...g,items:(its||[]).filter(i=>i.group_id===g.id)}));
-  render();
-}
-
-async function dbInsertGroup(data){
-  const{data:r,error}=await db.from('groups').insert(data).select().single();
-  if(error){alert(error.message);return null}
-  return r;
-}
+async function loadAll(){const{data:gs}=await db.from('groups').select('*').order('id');const{data:its}=await db.from('items').select('*').order('id');groups=(gs||[]).map(g=>({...g,items:(its||[]).filter(i=>i.group_id===g.id)}));render()}
 async function dbUpdateGroup(id,data){await db.from('groups').update(data).eq('id',id)}
 async function dbDeleteGroup(id){await db.from('groups').delete().eq('id',id)}
-async function dbInsertItem(data){
-  const{data:r,error}=await db.from('items').insert(data).select().single();
-  if(error){alert(error.message);return null}
-  return r;
-}
+async function dbInsertItem(data){await db.from('items').insert(data)}
 async function dbUpdateItem(id,data){await db.from('items').update(data).eq('id',id)}
 async function dbDeleteItem(id){await db.from('items').delete().eq('id',id)}
-async function dbUpdateAllItems(groupId,data){await db.from('items').update(data).eq('group_id',groupId)}
+async function dbUpdateAllItems(gid,data){await db.from('items').update(data).eq('group_id',gid)}
 
-/* ─── Stats & Filter ─── */
+function initApp(){const savedUrl=localStorage.getItem('sb_url'),savedKey=localStorage.getItem('sb_key');if(savedUrl&&savedKey){document.getElementById('mainApp').style.display='block';document.getElementById('pageTitle').innerHTML='Tour Booking Manager <span>'+MONTHS[new Date().getMonth()]+' '+new Date().getDate()+', '+new Date().getFullYear()+'</span>';db=window.supabase.createClient(savedUrl,savedKey);setSyncStatus(true);loadAll().then(()=>subscribeRealtime())}else{document.getElementById('setupScreen').style.display='block'}}
+
+/* ─── Stats ─── */
 function activeItems(){return groups.filter(g=>!isGroupPast(g)).flatMap(g=>(g.items||[]))}
+function renderStats(){const items=activeItems(),active=items.filter(i=>i.status!=='cancelled'),pend=items.filter(i=>i.status==='pending').length,pastCount=groups.filter(g=>isGroupPast(g)).length;document.getElementById('stats').innerHTML=`<div class="stat"><div class="stat-label"><span class="stat-dot" style="background:var(--text-primary)"></span>Active Groups</div><div class="stat-val">${groups.filter(g=>!isGroupPast(g)).length}</div><div class="stat-sub">${active.length} bookings · ${pend} pending</div></div>${TYPE_KEYS.map(tp=>{const c=active.filter(i=>i.type===tp).length;return`<div class="stat"><div class="stat-label"><span class="stat-dot" style="background:var(--accent-${tp})"></span>${TL[tp]}</div><div class="stat-val">${c}</div><div class="stat-sub">total ${items.filter(i=>i.type===tp).length}</div></div>`}).join('')}`;document.getElementById('pastCount').textContent=pastCount>0?pastCount:''}
 
-function renderStats(){
-  const items=activeItems();
-  const active=items.filter(i=>i.status!=='cancelled');
-  const pend=items.filter(i=>i.status==='pending').length;
-  const pastCount=groups.filter(g=>isGroupPast(g)).length;
-  document.getElementById('stats').innerHTML=`
-    <div class="stat"><div class="stat-label"><span class="stat-dot" style="background:var(--text-primary)"></span>Active Groups</div><div class="stat-val">${groups.filter(g=>!isGroupPast(g)).length}</div><div class="stat-sub">${active.length} bookings · ${pend} pending</div></div>
-    ${TYPE_KEYS.map(tp=>{const c=active.filter(i=>i.type===tp).length;return`<div class="stat"><div class="stat-label"><span class="stat-dot" style="background:var(--accent-${tp})"></span>${TL[tp]}</div><div class="stat-val">${c}</div><div class="stat-sub">total ${items.filter(i=>i.type===tp).length}</div></div>`}).join('')}`;
-  document.getElementById('pastCount').textContent=pastCount>0?pastCount:'';
-}
+function updateMonthFilter(){const mf=document.getElementById('monthFilter'),cur=mf.value,months=new Set();groups.forEach(g=>{if(g.start_date)months.add(g.start_date.substring(0,7));if(g.end_date)months.add(g.end_date.substring(0,7))});mf.innerHTML='<option value="all">All Months</option>'+[...months].sort().map(m=>{const[y,mo]=m.split('-');return`<option value="${m}"${m===cur?' selected':''}>${MONTHS[parseInt(mo)-1]} ${y}</option>`}).join('')}
 
-function updateMonthFilter(){
-  const mf=document.getElementById('monthFilter'),cur=mf.value;
-  const months=new Set();
-  groups.forEach(g=>{if(g.start_date)months.add(g.start_date.substring(0,7));if(g.end_date)months.add(g.end_date.substring(0,7))});
-  mf.innerHTML='<option value="all">All Months</option>'+[...months].sort().map(m=>{const[y,mo]=m.split('-');return`<option value="${m}"${m===cur?' selected':''}>${MONTHS[parseInt(mo)-1]} ${y}</option>`}).join('');
-}
+function getFiltered(){let list=[...groups];const q=document.getElementById('searchInput').value.trim().toLowerCase();if(q)list=list.filter(g=>g.name.toLowerCase().includes(q)||g.contact.toLowerCase().includes(q)||(g.items||[]).some(i=>i.venue.toLowerCase().includes(q)));const sf=document.getElementById('statusFilter').value;if(sf==='has-pending')list=list.filter(g=>(g.items||[]).some(i=>i.status==='pending'));if(sf==='all-confirmed')list=list.filter(g=>g.items&&g.items.length>0&&g.items.every(i=>i.status==='confirmed'));if(sf==='has-cancelled')list=list.filter(g=>(g.items||[]).some(i=>i.status==='cancelled'));const mf=document.getElementById('monthFilter').value;if(mf!=='all')list=list.filter(g=>g.start_date&&(g.start_date.substring(0,7)===mf||(g.end_date||'').substring(0,7)===mf));const[field,dir]=(document.getElementById('sortOrder').value||'start-asc').split('-');list.sort((a,b)=>{let va,vb;if(field==='start'){va=a.start_date||'';vb=b.start_date||''}else if(field==='end'){va=a.end_date||'';vb=b.end_date||''}else if(field==='name'){va=a.name.toLowerCase();vb=b.name.toLowerCase()}else if(field==='created'){va=a.id;vb=b.id}else{va=a.start_date||'';vb=b.start_date||''}if(va<vb)return dir==='asc'?-1:1;if(va>vb)return dir==='asc'?1:-1;return 0});return{activeList:list.filter(g=>!isGroupPast(g)),pastList:list.filter(g=>isGroupPast(g))}}
 
-function getFiltered(){
-  let list=[...groups];
-  const q=document.getElementById('searchInput').value.trim().toLowerCase();
-  if(q) list=list.filter(g=>g.name.toLowerCase().includes(q)||g.contact.toLowerCase().includes(q)||(g.items||[]).some(i=>i.venue.toLowerCase().includes(q)));
-  const sf=document.getElementById('statusFilter').value;
-  if(sf==='has-pending') list=list.filter(g=>(g.items||[]).some(i=>i.status==='pending'));
-  if(sf==='all-confirmed') list=list.filter(g=>g.items&&g.items.length>0&&g.items.every(i=>i.status==='confirmed'));
-  if(sf==='has-cancelled') list=list.filter(g=>(g.items||[]).some(i=>i.status==='cancelled'));
-  const mf=document.getElementById('monthFilter').value;
-  if(mf!=='all') list=list.filter(g=>g.start_date&&(g.start_date.substring(0,7)===mf||(g.end_date||'').substring(0,7)===mf));
-  const[field,dir]=(document.getElementById('sortOrder').value||'start-asc').split('-');
-  list.sort((a,b)=>{let va,vb;if(field==='start'){va=a.start_date||'';vb=b.start_date||''}else if(field==='end'){va=a.end_date||'';vb=b.end_date||''}else if(field==='name'){va=a.name.toLowerCase();vb=b.name.toLowerCase()}else if(field==='created'){va=a.id;vb=b.id}else{va=a.start_date||'';vb=b.start_date||''}if(va<vb)return dir==='asc'?-1:1;if(va>vb)return dir==='asc'?1:-1;return 0});
-  return{activeList:list.filter(g=>!isGroupPast(g)),pastList:list.filter(g=>isGroupPast(g))};
-}
+function render(){renderStats();updateMonthFilter();const{activeList,pastList}=getFiltered();const el=document.getElementById('groupList');if(!activeList.length&&(!showPast||!pastList.length)){el.innerHTML='<div class="empty"><div style="font-size:32px;opacity:.3;margin-bottom:6px">📋</div><p>No groups to display</p></div>';return}let html=activeList.map(g=>renderGroupCard(g,false)).join('');if(showPast&&pastList.length){html+=`<div class="past-divider"><span>Past Tours (${pastList.length})</span></div>`;html+=pastList.map(g=>renderGroupCard(g,true)).join('')}el.innerHTML=html;document.getElementById('pastToggle').classList.toggle('active',showPast);document.getElementById('pastToggleLabel').textContent=showPast?'Hide Past Tours':'Show Past Tours'}
 
-function render(){
-  renderStats();updateMonthFilter();
-  const{activeList,pastList}=getFiltered();
-  const el=document.getElementById('groupList');
-  if(!activeList.length&&(!showPast||!pastList.length)){el.innerHTML='<div class="empty"><div style="font-size:32px;opacity:.3;margin-bottom:6px">📋</div><p>No groups to display</p></div>';return}
-  let html=activeList.map(g=>renderGroupCard(g,false)).join('');
-  if(showPast&&pastList.length){html+=`<div class="past-divider"><span>Past Tours (${pastList.length})</span></div>`;html+=pastList.map(g=>renderGroupCard(g,true)).join('')}
-  el.innerHTML=html;
-  const btn=document.getElementById('pastToggle');
-  btn.classList.toggle('active',showPast);
-  document.getElementById('pastToggleLabel').textContent=showPast?'Hide Past Tours':'Show Past Tours';
-}
-
-function renderGroupCard(g,isPast){
-  const isOpen=openGroups.has(g.id),items=g.items||[];
-  const confirmed=items.filter(i=>i.status==='confirmed').length,total=items.length;
-  const pct=total?Math.round(confirmed/total*100):0;
-  const gCancelled=isGroupCancelled(g);
-  const tc={};items.forEach(i=>{if(i.status!=='cancelled')tc[i.type]=(tc[i.type]||0)+1});
-  return`
-  <div class="group-card ${isOpen?'open':''} ${isPast?'past':''} ${gCancelled?'group-cancelled':''}" data-gid="${g.id}">
-    <div class="group-header" onclick="toggleGroup(${g.id})">
-      <div class="group-expand">▶</div>
-      <div class="group-info">
-        <div class="group-name">
-          <span class="group-field-edit" onclick="event.stopPropagation();inlineEditGroup(${g.id},'name',this)">${esc(g.name)}</span>
-          ${isPast?'<span class="past-label">Ended</span>':''}
-          ${gCancelled?'<span class="group-cancelled-label">Cancelled</span>':''}
-          <div class="progress-bar" title="${pct}%"><div class="progress-fill confirmed" style="width:${pct}%"></div><div class="progress-fill pending" style="width:${total?Math.round(items.filter(i=>i.status==='pending').length/total*100):0}%"></div></div>
-        </div>
-        <div class="group-meta">
-          <span onclick="event.stopPropagation();inlineEditGroup(${g.id},'contact',this)" class="group-field-edit">👤 ${esc(g.contact||'')}</span>
-          <span onclick="event.stopPropagation();inlineEditGroup(${g.id},'phone',this)" class="group-field-edit">📞 ${esc(g.phone||'')}</span>
-          <span onclick="event.stopPropagation();inlineEditGroupDate(${g.id},'start_date',this)" class="group-field-edit">📅 ${fmtDate(g.start_date)}</span>
-          <span style="pointer-events:none">~</span>
-          <span onclick="event.stopPropagation();inlineEditGroupDate(${g.id},'end_date',this)" class="group-field-edit">${fmtDate(g.end_date)}</span>
-          <span onclick="event.stopPropagation();inlineEditGroup(${g.id},'pax',this,'number')" class="group-field-edit">👥 ${g.pax}</span>
-          <span>📋 ${confirmed}/${total} confirmed</span>
-        </div>
-      </div>
-      <div class="group-tags">${Object.entries(tc).map(([tp,c])=>`<span class="tag tag-${tp}">${TL[tp]} ${c}</span>`).join('')}</div>
-      <div class="group-actions-area" onclick="event.stopPropagation()">
-        ${g.drive_link?`<button class="drive-btn linked" onclick="window.open('${esc(g.drive_link)}','_blank')" title="Open Drive"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4.433 22l-3.4-5.89L9.033 2h6.8L4.433 22z" fill="#4285F4"/><path d="M20.967 22H7.567l3.4-5.89h13.4L20.967 22z" fill="#34A853"/><path d="M1.033 16.11L4.433 22l7.534-13.04L8.567 2 1.033 16.11z" fill="#FBBC04"/></svg></button><button class="icon-btn" onclick="editDriveLink(${g.id})" title="Edit" style="font-size:11px">✎</button>`:`<button class="drive-btn unlinked" onclick="editDriveLink(${g.id})" title="Link Drive"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4.433 22l-3.4-5.89L9.033 2h6.8L4.433 22z" fill="currentColor" opacity=".4"/><path d="M20.967 22H7.567l3.4-5.89h13.4L20.967 22z" fill="currentColor" opacity=".3"/><path d="M1.033 16.11L4.433 22l7.534-13.04L8.567 2 1.033 16.11z" fill="currentColor" opacity=".5"/></svg></button>`}
-        ${gCancelled?`<button class="btn btn-sm btn-secondary" onclick="restoreGroup(${g.id})" style="font-size:11px;padding:4px 10px">Undo Cancel</button>`:`<button class="btn btn-sm" onclick="cancelGroup(${g.id})" style="font-size:11px;padding:4px 10px;background:var(--status-cancelled-bg);color:var(--status-cancelled);border:none">Cancel All</button>`}
-        <button class="icon-btn del" onclick="deleteGroup(${g.id})">✕</button>
-      </div>
-    </div>
-    <div class="group-body">
-      <div class="items-header"><span>Booking Items (${total})</span><button class="btn btn-sm btn-secondary" onclick="openItemModal(${g.id})"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> Add Booking</button></div>
-      ${items.length?`
-      <table class="item-table">
-        <thead><tr><th>Type</th><th>Venue</th><th>Date</th><th>Pax</th><th>Price</th><th>Comm.</th><th>Status</th><th>Invoice</th><th>Memo</th><th></th></tr></thead>
-        <tbody>${items.map(i=>`
-          <tr class="${i.status==='cancelled'?'row-cancelled':''}">
-            <td class="cell-rel" onclick="event.stopPropagation();showTypeDropdown(${g.id},${i.id},this)"><span class="tag tag-${i.type}" style="cursor:pointer">${TL[i.type]} ▾</span><div class="cell-dropdown" id="td-${g.id}-${i.id}">${TYPE_KEYS.map(tp=>`<button onclick="event.stopPropagation();setItemField(${g.id},${i.id},'type','${tp}')"><span class="check">${i.type===tp?'✓':''}</span><span class="tag tag-${tp}" style="pointer-events:none">${TL[tp]}</span></button>`).join('')}</div></td>
-            <td><span class="editable" onclick="event.stopPropagation();inlineEditItem(${g.id},${i.id},'venue',this)">${esc(i.venue)}</span>${i.type==='hotel'?`<div class="room-info" onclick="event.stopPropagation()"><span class="room-tag editable" onclick="inlineEditItem(${g.id},${i.id},'room_type',this)">${esc(i.room_type||'Room type')}</span><span class="room-count editable" onclick="inlineEditItem(${g.id},${i.id},'room_count',this,'number')">× ${i.room_count||0}</span></div>`:''}</td>
-            <td style="white-space:nowrap"><span class="editable" onclick="event.stopPropagation();inlineEditItemDate(${g.id},${i.id},'start_date',this)">${fmtDate(i.start_date)}</span>${i.start_date!==i.end_date?` ~ <span class="editable" onclick="event.stopPropagation();inlineEditItemDate(${g.id},${i.id},'end_date',this)">${fmtDate(i.end_date)}</span>`:''}</td>
-            <td style="text-align:center"><span class="editable" onclick="event.stopPropagation();inlineEditItem(${g.id},${i.id},'pax',this,'number')">${i.pax}</span></td>
-            <td style="white-space:nowrap"><span class="editable" onclick="event.stopPropagation();inlineEditItem(${g.id},${i.id},'price',this)">${esc(i.price||'-')}</span></td>
-            <td style="white-space:nowrap"><span class="editable" onclick="event.stopPropagation();inlineEditItem(${g.id},${i.id},'commission',this)">${esc(i.commission||'-')}</span></td>
-            <td class="cell-rel" onclick="event.stopPropagation();showStatusDropdown(${g.id},${i.id},this)"><span class="status-text ${i.status}"><span class="status-dot dot-${i.status}"></span>${SL[i.status]} ▾</span><div class="cell-dropdown" id="sd-${g.id}-${i.id}">${STATUS_KEYS.map(s=>`<button class="${s}" onclick="event.stopPropagation();setItemField(${g.id},${i.id},'status','${s}')"><span class="check">${i.status===s?'✓':''}</span><span class="status-dot dot-${s}"></span>${SL[s]}</button>`).join('')}</div></td>
-            <td style="text-align:center" onclick="event.stopPropagation()">${i.invoice_link?`<a href="${esc(i.invoice_link)}" target="_blank" class="invoice-link" onclick="event.stopPropagation()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="currentColor" stroke-width="2"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" stroke="currentColor" stroke-width="2"/></svg></a><button class="icon-btn" onclick="event.stopPropagation();editInvoiceLink(${g.id},${i.id})" style="font-size:10px;width:22px;height:22px">✎</button>`:`<button class="invoice-add" onclick="event.stopPropagation();editInvoiceLink(${g.id},${i.id})">+</button>`}</td>
-            <td><span class="editable memo-cell" onclick="event.stopPropagation();openMemoPopup(${g.id},${i.id},this)">${esc(i.memo||'-')}</span></td>
-            <td><div class="item-actions"><button class="icon-btn del" onclick="event.stopPropagation();deleteItem(${g.id},${i.id})">✕</button></div></td>
-          </tr>`).join('')}</tbody>
-      </table>`:'<div class="empty" style="padding:30px"><p>No bookings yet. Add one to get started.</p></div>'}
-    </div>
-  </div>`;
-}
+function renderGroupCard(g,isPast){const isOpen=openGroups.has(g.id),items=g.items||[],confirmed=items.filter(i=>i.status==='confirmed').length,total=items.length,pct=total?Math.round(confirmed/total*100):0,gCancelled=isGroupCancelled(g),tc={};items.forEach(i=>{if(i.status!=='cancelled')tc[i.type]=(tc[i.type]||0)+1});
+return`<div class="group-card ${isOpen?'open':''} ${isPast?'past':''} ${gCancelled?'group-cancelled':''}" data-gid="${g.id}">
+<div class="group-header" onclick="toggleGroup(${g.id})"><div class="group-expand">▶</div><div class="group-info">
+<div class="group-name"><span class="group-field-edit" onclick="event.stopPropagation();inlineEditGroup(${g.id},'name',this)">${esc(g.name)}</span>${isPast?'<span class="past-label">Ended</span>':''}${gCancelled?'<span class="group-cancelled-label">Cancelled</span>':''}<div class="progress-bar" title="${pct}%"><div class="progress-fill confirmed" style="width:${pct}%"></div><div class="progress-fill pending" style="width:${total?Math.round(items.filter(i=>i.status==='pending').length/total*100):0}%"></div></div></div>
+<div class="group-meta"><span onclick="event.stopPropagation();inlineEditGroup(${g.id},'contact',this)" class="group-field-edit">👤 ${esc(g.contact||'')}</span><span onclick="event.stopPropagation();inlineEditGroup(${g.id},'phone',this)" class="group-field-edit">📞 ${esc(g.phone||'')}</span><span onclick="event.stopPropagation();inlineEditGroupDate(${g.id},'start_date',this)" class="group-field-edit">📅 ${fmtDate(g.start_date)}</span><span style="pointer-events:none">~</span><span onclick="event.stopPropagation();inlineEditGroupDate(${g.id},'end_date',this)" class="group-field-edit">${fmtDate(g.end_date)}</span><span onclick="event.stopPropagation();inlineEditGroup(${g.id},'pax',this,'number')" class="group-field-edit">👥 ${g.pax}</span><span>📋 ${confirmed}/${total} confirmed</span></div></div>
+<div class="group-tags">${Object.entries(tc).map(([tp,c])=>`<span class="tag tag-${tp}">${TL[tp]} ${c}</span>`).join('')}</div>
+<div class="group-actions-area" onclick="event.stopPropagation()">${g.drive_link?`<button class="drive-btn linked" onclick="window.open('${esc(g.drive_link)}','_blank')">${DSVG.linked}</button><button class="icon-btn" onclick="editDriveLink(${g.id})" style="font-size:11px">✎</button>`:`<button class="drive-btn unlinked" onclick="editDriveLink(${g.id})">${DSVG.unlinked}</button>`}<button class="group-memo-btn ${g.memo?'has-memo':''}" onclick="event.stopPropagation();openGroupMemo(${g.id},this)">📝</button>${gCancelled?`<button class="btn btn-sm btn-secondary" onclick="restoreGroup(${g.id})" style="font-size:11px;padding:4px 10px">Undo Cancel</button>`:`<button class="btn btn-sm" onclick="cancelGroup(${g.id})" style="font-size:11px;padding:4px 10px;background:var(--status-cancelled-bg);color:var(--status-cancelled);border:none">Cancel All</button>`}<button class="icon-btn del" onclick="deleteGroup(${g.id})">✕</button></div></div>
+<div class="group-body"><div class="items-header"><span>Booking Items (${total})</span><button class="btn btn-sm btn-secondary" onclick="openItemModal(${g.id})"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> Add Booking</button></div>
+${items.length?`<table class="item-table"><thead><tr><th>Type</th><th>Venue</th><th>Date</th><th>Pax</th><th>Price</th><th>Comm.</th><th>Status</th><th>Invoice</th><th>Memo</th><th></th></tr></thead><tbody>${items.map(i=>`<tr class="${i.status==='cancelled'?'row-cancelled':''}">
+<td class="cell-rel" onclick="event.stopPropagation();showTypeDropdown(${g.id},${i.id},this)"><span class="tag tag-${i.type}" style="cursor:pointer">${TL[i.type]} ▾</span><div class="cell-dropdown" id="td-${g.id}-${i.id}">${TYPE_KEYS.map(tp=>`<button onclick="event.stopPropagation();setItemField(${g.id},${i.id},'type','${tp}')"><span class="check">${i.type===tp?'✓':''}</span><span class="tag tag-${tp}" style="pointer-events:none">${TL[tp]}</span></button>`).join('')}</div></td>
+<td><span class="editable" onclick="event.stopPropagation();inlineEditItem(${g.id},${i.id},'venue',this)">${esc(i.venue)}</span>${i.type==='hotel'?`<div class="room-info" onclick="event.stopPropagation()"><span class="room-tag editable" onclick="inlineEditItem(${g.id},${i.id},'room_type',this)">${esc(i.room_type||'Room type')}</span><span class="room-count editable" onclick="inlineEditItem(${g.id},${i.id},'room_count',this,'number')">× ${i.room_count||0}</span></div>`:''}</td>
+<td style="white-space:nowrap"><span class="editable" onclick="event.stopPropagation();inlineEditItemDate(${g.id},${i.id},'start_date',this)">${fmtDate(i.start_date)}</span>${i.start_date!==i.end_date?` ~ <span class="editable" onclick="event.stopPropagation();inlineEditItemDate(${g.id},${i.id},'end_date',this)">${fmtDate(i.end_date)}</span>`:''}</td>
+<td style="text-align:center"><span class="editable" onclick="event.stopPropagation();inlineEditItem(${g.id},${i.id},'pax',this,'number')">${i.pax}</span></td>
+<td style="white-space:nowrap"><span class="editable" onclick="event.stopPropagation();inlineEditItem(${g.id},${i.id},'price',this)">${esc(i.price||'-')}</span></td>
+<td style="white-space:nowrap"><span class="editable" onclick="event.stopPropagation();inlineEditItem(${g.id},${i.id},'commission',this)">${esc(i.commission||'-')}</span></td>
+<td class="cell-rel" onclick="event.stopPropagation();showStatusDropdown(${g.id},${i.id},this)"><span class="status-text ${i.status}"><span class="status-dot dot-${i.status}"></span>${SL[i.status]} ▾</span><div class="cell-dropdown" id="sd-${g.id}-${i.id}">${STATUS_KEYS.map(s=>`<button class="${s}" onclick="event.stopPropagation();setItemField(${g.id},${i.id},'status','${s}')"><span class="check">${i.status===s?'✓':''}</span><span class="status-dot dot-${s}"></span>${SL[s]}</button>`).join('')}</div></td>
+<td style="text-align:center" onclick="event.stopPropagation()">${i.invoice_link?`<a href="${esc(i.invoice_link)}" target="_blank" class="invoice-link" onclick="event.stopPropagation()">${ISVG}</a><button class="icon-btn" onclick="event.stopPropagation();editInvoiceLink(${g.id},${i.id})" style="font-size:10px;width:22px;height:22px">✎</button>`:`<button class="invoice-add" onclick="event.stopPropagation();editInvoiceLink(${g.id},${i.id})">+</button>`}</td>
+<td><span class="editable memo-cell" onclick="event.stopPropagation();openMemoPopup(${g.id},${i.id},this)">${esc(i.memo||'-')}</span></td>
+<td><div class="item-actions"><button class="icon-btn del" onclick="event.stopPropagation();deleteItem(${g.id},${i.id})">✕</button></div></td>
+</tr>`).join('')}</tbody></table>`:'<div class="empty" style="padding:30px"><p>No bookings yet. Add one to get started.</p></div>'}
+</div></div>`}
 
 /* ─── Inline Edit ─── */
-function inlineEditItem(gid,iid,field,el,type){
-  const g=groups.find(x=>x.id===gid);if(!g)return;
-  const it=(g.items||[]).find(x=>x.id===iid);if(!it)return;
-  let val=it[field]||'';if(type==='number')val=it[field]||0;
-  const input=document.createElement('input');input.className='inline-input';input.type=type||'text';input.value=val;
-  if(type==='number'){input.min='0';input.style.width='60px'}
-  const orig=el.innerHTML;el.innerHTML='';el.appendChild(input);input.focus();input.select();
-  const commit=async()=>{let v=input.value.trim();if(type==='number')v=parseInt(v)||0;if(v===''&&field==='venue'){el.innerHTML=orig;return}await dbUpdateItem(iid,{[field]:v});await loadAll()};
-  input.addEventListener('blur',commit);
-  input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();input.blur()}if(e.key==='Escape'){el.innerHTML=orig;input.removeEventListener('blur',commit)}});
-}
-function inlineEditItemDate(gid,iid,field,el){
-  const g=groups.find(x=>x.id===gid);if(!g)return;const it=(g.items||[]).find(x=>x.id===iid);if(!it)return;
-  openCal(el,it[field]||todayStr(),async function(val){await dbUpdateItem(iid,{[field]:val});await loadAll()});
-}
-function inlineEditGroup(gid,field,el,type){
-  const g=groups.find(x=>x.id===gid);if(!g)return;
-  let val=g[field]||'';if(type==='number')val=g[field]||0;
-  const input=document.createElement('input');input.className='inline-input';input.type=type||'text';input.value=val;
-  if(type==='number'){input.min='1';input.style.width='60px'}if(field==='name')input.style.width='280px';
-  const orig=el.innerHTML;el.innerHTML='';el.appendChild(input);input.focus();input.select();
-  const commit=async()=>{let v=input.value.trim();if(type==='number')v=parseInt(v)||1;if(v===''&&field==='name'){el.innerHTML=orig;return}await dbUpdateGroup(gid,{[field]:v});await loadAll()};
-  input.addEventListener('blur',commit);
-  input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();input.blur()}if(e.key==='Escape'){el.innerHTML=orig;input.removeEventListener('blur',commit)}});
-}
-function inlineEditGroupDate(gid,field,el){
-  const g=groups.find(x=>x.id===gid);if(!g)return;
-  openCal(el,g[field]||todayStr(),async function(val){await dbUpdateGroup(gid,{[field]:val});await loadAll()});
-}
+function inlineEditItem(gid,iid,field,el,type){const g=groups.find(x=>x.id===gid);if(!g)return;const it=(g.items||[]).find(x=>x.id===iid);if(!it)return;let val=it[field]||'';if(type==='number')val=it[field]||0;const input=document.createElement('input');input.className='inline-input';input.type=type||'text';input.value=val;if(type==='number'){input.min='0';input.style.width='60px'}const orig=el.innerHTML;el.innerHTML='';el.appendChild(input);input.focus();input.select();const commit=async()=>{let v=input.value.trim();if(type==='number')v=parseInt(v)||0;if(v===''&&field==='venue'){el.innerHTML=orig;return}await dbUpdateItem(iid,{[field]:v});await loadAll()};input.addEventListener('blur',commit);input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();input.blur()}if(e.key==='Escape'){el.innerHTML=orig;input.removeEventListener('blur',commit)}})}
+function inlineEditItemDate(gid,iid,field,el){const g=groups.find(x=>x.id===gid);if(!g)return;const it=(g.items||[]).find(x=>x.id===iid);if(!it)return;openCal(el,it[field]||todayStr(),async function(val){await dbUpdateItem(iid,{[field]:val});await loadAll()})}
+function inlineEditGroup(gid,field,el,type){const g=groups.find(x=>x.id===gid);if(!g)return;let val=g[field]||'';if(type==='number')val=g[field]||0;const input=document.createElement('input');input.className='inline-input';input.type=type||'text';input.value=val;if(type==='number'){input.min='1';input.style.width='60px'}if(field==='name')input.style.width='280px';const orig=el.innerHTML;el.innerHTML='';el.appendChild(input);input.focus();input.select();const commit=async()=>{let v=input.value.trim();if(type==='number')v=parseInt(v)||1;if(v===''&&field==='name'){el.innerHTML=orig;return}await dbUpdateGroup(gid,{[field]:v});await loadAll()};input.addEventListener('blur',commit);input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();input.blur()}if(e.key==='Escape'){el.innerHTML=orig;input.removeEventListener('blur',commit)}})}
+function inlineEditGroupDate(gid,field,el){const g=groups.find(x=>x.id===gid);if(!g)return;openCal(el,g[field]||todayStr(),async function(val){await dbUpdateGroup(gid,{[field]:val});await loadAll()})}
 
 /* ─── Dropdowns ─── */
 function closeAllDropdowns(){document.querySelectorAll('.cell-dropdown.open').forEach(d=>d.classList.remove('open'))}
@@ -508,83 +315,45 @@ let calCb=null,calMonth=null,calYear=null,calSelected=null;
 function openCal(anchor,currentVal,callback){closeAllDropdowns();calCb=callback;const dt=new Date(currentVal+'T00:00:00');calMonth=dt.getMonth();calYear=dt.getFullYear();calSelected=currentVal;const popup=document.getElementById('calPopup');const rect=anchor.getBoundingClientRect();let top=rect.bottom+6,left=rect.left;if(top+320>window.innerHeight)top=rect.top-320;if(left+280>window.innerWidth)left=window.innerWidth-290;if(left<8)left=8;popup.style.top=top+'px';popup.style.left=left+'px';document.getElementById('calBackdrop').style.display='block';renderCal();requestAnimationFrame(()=>popup.classList.add('open'))}
 function closeCal(){document.getElementById('calPopup').classList.remove('open');document.getElementById('calBackdrop').style.display='none';calCb=null}
 function calNav(dir){calMonth+=dir;if(calMonth>11){calMonth=0;calYear++}if(calMonth<0){calMonth=11;calYear--}renderCal()}
-function renderCal(){document.getElementById('calTitle').textContent=fmtMonth(calYear,calMonth);const grid=document.getElementById('calGrid');let html=DAYS.map(d=>`<span class="cal-dow">${d}</span>`).join('');const first=new Date(calYear,calMonth,1),startDay=first.getDay(),dim=new Date(calYear,calMonth+1,0).getDate(),prevDays=new Date(calYear,calMonth,0).getDate();const ts=todayStr();for(let i=0;i<startDay;i++){const day=prevDays-startDay+i+1;html+=`<button class="cal-cell other-month" onclick="calPick(${calYear},${calMonth-1},${day})">${day}</button>`}for(let d=1;d<=dim;d++){const ds=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;const cls=[];if(ds===ts)cls.push('today');if(ds===calSelected)cls.push('selected');html+=`<button class="cal-cell ${cls.join(' ')}" onclick="calPick(${calYear},${calMonth},${d})">${d}</button>`}const rem=(startDay+dim)%7;if(rem>0)for(let i=1;i<=7-rem;i++){html+=`<button class="cal-cell other-month" onclick="calPick(${calYear},${calMonth+1},${i})">${i}</button>`}grid.innerHTML=html}
+function renderCal(){document.getElementById('calTitle').textContent=fmtMonth(calYear,calMonth);const grid=document.getElementById('calGrid');let html=DAYS.map(d=>`<span class="cal-dow">${d}</span>`).join('');const first=new Date(calYear,calMonth,1),startDay=first.getDay(),dim=new Date(calYear,calMonth+1,0).getDate(),prevDays=new Date(calYear,calMonth,0).getDate(),ts=todayStr();for(let i=0;i<startDay;i++){const day=prevDays-startDay+i+1;html+=`<button class="cal-cell other-month" onclick="calPick(${calYear},${calMonth-1},${day})">${day}</button>`}for(let d=1;d<=dim;d++){const ds=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;const cls=[];if(ds===ts)cls.push('today');if(ds===calSelected)cls.push('selected');html+=`<button class="cal-cell ${cls.join(' ')}" onclick="calPick(${calYear},${calMonth},${d})">${d}</button>`}const rem=(startDay+dim)%7;if(rem>0)for(let i=1;i<=7-rem;i++){html+=`<button class="cal-cell other-month" onclick="calPick(${calYear},${calMonth+1},${i})">${i}</button>`}grid.innerHTML=html}
 function calPick(y,m,d){const dt=new Date(y,m,d);const val=dt.toISOString().split('T')[0];if(calCb)calCb(val);closeCal()}
 
 /* ─── Memo Popup ─── */
-let memoGid=null,memoIid=null;
-function openMemoPopup(gid,iid,anchor){const g=groups.find(x=>x.id===gid);if(!g)return;const it=(g.items||[]).find(x=>x.id===iid);if(!it)return;memoGid=gid;memoIid=iid;const popup=document.getElementById('memoPopup');const rect=anchor.getBoundingClientRect();let top=rect.bottom+6,left=rect.left-160;if(top+220>window.innerHeight)top=rect.top-220;if(left+320>window.innerWidth)left=window.innerWidth-330;if(left<8)left=8;popup.style.top=top+'px';popup.style.left=left+'px';document.getElementById('memoTextarea').value=it.memo||'';document.getElementById('memoBackdrop').style.display='block';requestAnimationFrame(()=>{popup.classList.add('open');document.getElementById('memoTextarea').focus()})}
-function closeMemoPopup(){document.getElementById('memoPopup').classList.remove('open');document.getElementById('memoBackdrop').style.display='none';memoGid=null;memoIid=null}
-async function saveMemoPopup(){if(memoIid===null)return;await dbUpdateItem(memoIid,{memo:document.getElementById('memoTextarea').value.trim()});closeMemoPopup();await loadAll()}
+let memoGid=null,memoIid=null,memoMode=null;
+function openMemoPopup(gid,iid,anchor){const g=groups.find(x=>x.id===gid);if(!g)return;const it=(g.items||[]).find(x=>x.id===iid);if(!it)return;memoGid=gid;memoIid=iid;memoMode='item';showMemoAt(anchor,it.memo||'')}
+function openGroupMemo(gid,anchor){const g=groups.find(x=>x.id===gid);if(!g)return;memoGid=gid;memoIid=null;memoMode='group';showMemoAt(anchor,g.memo||'')}
+function showMemoAt(anchor,val){const popup=document.getElementById('memoPopup');const rect=anchor.getBoundingClientRect();let top=rect.bottom+6,left=rect.left-160;if(top+220>window.innerHeight)top=rect.top-220;if(left+320>window.innerWidth)left=window.innerWidth-330;if(left<8)left=8;popup.style.top=top+'px';popup.style.left=left+'px';document.getElementById('memoTextarea').value=val;document.getElementById('memoBackdrop').style.display='block';requestAnimationFrame(()=>{popup.classList.add('open');document.getElementById('memoTextarea').focus()})}
+function closeMemoPopup(){document.getElementById('memoPopup').classList.remove('open');document.getElementById('memoBackdrop').style.display='none';memoGid=null;memoIid=null;memoMode=null}
+async function saveMemoPopup(){if(memoGid===null)return;const val=document.getElementById('memoTextarea').value.trim();if(memoMode==='group'){await dbUpdateGroup(memoGid,{memo:val})}else{await dbUpdateItem(memoIid,{memo:val})}closeMemoPopup();await loadAll()}
 
 /* ─── Links ─── */
 async function editDriveLink(gid){const g=groups.find(x=>x.id===gid);if(!g)return;const url=prompt('Google Drive URL:',g.drive_link||'');if(url===null)return;await dbUpdateGroup(gid,{drive_link:url.trim()});await loadAll()}
 async function editInvoiceLink(gid,iid){const g=groups.find(x=>x.id===gid);if(!g)return;const it=(g.items||[]).find(x=>x.id===iid);if(!it)return;const url=prompt('Invoice Google Drive URL:',it.invoice_link||'');if(url===null)return;await dbUpdateItem(iid,{invoice_link:url.trim()});await loadAll()}
 
-/* ─── Group Actions ─── */
+/* ─── Custom Confirm ─── */
+function customConfirm(msg){return new Promise(resolve=>{const c=document.getElementById('confirmContainer');c.innerHTML=`<div class="confirm-overlay"><div class="confirm-box"><p>${msg}</p><div class="confirm-btns"><button class="btn btn-secondary" id="cfmNo">Cancel</button><button class="btn btn-primary" id="cfmYes" style="background:var(--status-cancelled);min-width:80px">Delete</button></div></div></div>`;document.getElementById('cfmYes').onclick=()=>{c.innerHTML='';resolve(true)};document.getElementById('cfmNo').onclick=()=>{c.innerHTML='';resolve(false)}})}
+
+/* ─── Actions ─── */
 function togglePast(){showPast=!showPast;render()}
 function toggleGroup(gid){if(openGroups.has(gid))openGroups.delete(gid);else openGroups.add(gid);render()}
 async function cancelGroup(gid){await dbUpdateAllItems(gid,{status:'cancelled'});await loadAll()}
 async function restoreGroup(gid){await dbUpdateAllItems(gid,{status:'pending'});await loadAll()}
-async function deleteGroup(gid){const g=groups.find(x=>x.id===gid);if(!g)return;if(!confirm(`Delete "${g.name}" and all bookings?`))return;await dbDeleteGroup(gid);openGroups.delete(gid);await loadAll()}
+async function deleteGroup(gid){const g=groups.find(x=>x.id===gid);if(!g)return;if(!await customConfirm(`Delete "${g.name}" and all bookings?`))return;await dbDeleteGroup(gid);openGroups.delete(gid);await loadAll()}
 
 /* ─── Group Modal ─── */
-function openGroupModal(){
-  document.getElementById('groupModalTitle').textContent='Add New Group';
-  document.getElementById('groupModalBody').innerHTML=`
-    <div class="form-row full"><div class="fg"><label>Group Name</label><input type="text" id="gName" placeholder="e.g. Jeju 3N4D Family Trip"></div></div>
-    <div class="form-row"><div class="fg"><label>Contact</label><input type="text" id="gContact" placeholder="John Doe"></div><div class="fg"><label>Phone</label><input type="text" id="gPhone" placeholder="010-0000-0000"></div></div>
-    <div class="form-row tri"><div class="fg"><label>Trip Start</label><input type="date" id="gStart" value="${todayStr()}"></div><div class="fg"><label>Trip End</label><input type="date" id="gEnd" value="${todayStr()}"></div><div class="fg"><label>Pax</label><input type="number" id="gPax" min="1" value="2"></div></div>
-    <div class="form-row full"><div class="fg"><label>Memo</label><textarea id="gMemo" placeholder="Group-wide notes"></textarea></div></div>
-    <div class="modal-foot"><button class="btn btn-secondary" onclick="closeGroupModal()">Cancel</button><button class="btn btn-primary" onclick="saveGroup()">Save</button></div>`;
-  document.getElementById('groupModalOverlay').classList.add('active');
-}
+function openGroupModal(){document.getElementById('groupModalTitle').textContent='Add New Group';document.getElementById('groupModalBody').innerHTML=`<div class="form-row full"><div class="fg"><label>Group Name</label><input type="text" id="gName" placeholder="e.g. Jeju 3N4D Family Trip"></div></div><div class="form-row"><div class="fg"><label>Contact</label><input type="text" id="gContact" placeholder="John Doe"></div><div class="fg"><label>Phone</label><input type="text" id="gPhone" placeholder="010-0000-0000"></div></div><div class="form-row tri"><div class="fg"><label>Trip Start</label><input type="date" id="gStart" value="${todayStr()}"></div><div class="fg"><label>Trip End</label><input type="date" id="gEnd" value="${todayStr()}"></div><div class="fg"><label>Pax</label><input type="number" id="gPax" min="1" value="2"></div></div><div class="form-row full"><div class="fg"><label>Memo</label><textarea id="gMemo" placeholder="Group-wide notes"></textarea></div></div><div class="modal-foot"><button class="btn btn-secondary" onclick="closeGroupModal()">Cancel</button><button class="btn btn-primary" onclick="saveGroup()">Save</button></div>`;document.getElementById('groupModalOverlay').classList.add('active')}
 function closeGroupModal(){document.getElementById('groupModalOverlay').classList.remove('active')}
-async function saveGroup(){
-  const data={name:document.getElementById('gName').value.trim(),contact:document.getElementById('gContact').value.trim(),phone:document.getElementById('gPhone').value.trim(),start_date:document.getElementById('gStart').value,end_date:document.getElementById('gEnd').value,pax:parseInt(document.getElementById('gPax').value)||1,memo:document.getElementById('gMemo').value.trim()};
-  if(!data.name){alert('Group name is required.');return}
-  await dbInsertGroup(data);closeGroupModal();await loadAll();
-}
+async function saveGroup(){const data={name:document.getElementById('gName').value.trim(),contact:document.getElementById('gContact').value.trim(),phone:document.getElementById('gPhone').value.trim(),start_date:document.getElementById('gStart').value,end_date:document.getElementById('gEnd').value,pax:parseInt(document.getElementById('gPax').value)||1,memo:document.getElementById('gMemo').value.trim()};if(!data.name){alert('Group name is required.');return}await db.from('groups').insert(data);closeGroupModal();await loadAll()}
 
 /* ─── Item Modal ─── */
-function openItemModal(gid){
-  const g=groups.find(x=>x.id===gid);
-  document.getElementById('itemModalTitle').textContent='Add Booking';
-  document.getElementById('itemModalBody').innerHTML=`
-    <input type="hidden" id="iGroupId" value="${gid}">
-    <div class="form-row"><div class="fg"><label>Type</label><select id="iType" onchange="toggleRoomFields()">${TYPE_KEYS.map(tp=>`<option value="${tp}">${TL[tp]}</option>`).join('')}</select></div><div class="fg"><label>Status</label><select id="iStatus">${STATUS_KEYS.map(s=>`<option value="${s}">${SL[s]}</option>`).join('')}</select></div></div>
-    <div class="form-row full"><div class="fg"><label>Venue</label><input type="text" id="iVenue" placeholder="Hotel, tour, restaurant..."></div></div>
-    <div class="form-row" id="roomFields" style="display:none"><div class="fg"><label>Room Type</label><input type="text" id="iRoomType" placeholder="e.g. Deluxe Twin"></div><div class="fg"><label>Rooms</label><input type="number" id="iRoomCount" min="1" value="1"></div></div>
-    <div class="form-row"><div class="fg"><label>Start</label><input type="date" id="iStart" value="${g?g.start_date:todayStr()}"></div><div class="fg"><label>End</label><input type="date" id="iEnd" value="${g?g.start_date:todayStr()}"></div></div>
-    <div class="form-row tri"><div class="fg"><label>Pax</label><input type="number" id="iPax" min="1" value="${g?g.pax:2}"></div><div class="fg"><label>Price</label><input type="text" id="iPrice" placeholder="$0"></div><div class="fg"><label>Commission</label><input type="text" id="iCommission" placeholder="$0"></div></div>
-    <div class="form-row full"><div class="fg"><label>Memo</label><textarea id="iMemo" placeholder="Requests, notes"></textarea></div></div>
-    <div class="modal-foot"><button class="btn btn-secondary" onclick="closeItemModal()">Cancel</button><button class="btn btn-primary" onclick="saveItem()">Save</button></div>`;
-  document.getElementById('itemModalOverlay').classList.add('active');
-  toggleRoomFields();
-}
+function openItemModal(gid){const g=groups.find(x=>x.id===gid);document.getElementById('itemModalTitle').textContent='Add Booking';document.getElementById('itemModalBody').innerHTML=`<input type="hidden" id="iGroupId" value="${gid}"><div class="form-row"><div class="fg"><label>Type</label><select id="iType" onchange="toggleRoomFields()">${TYPE_KEYS.map(tp=>`<option value="${tp}">${TL[tp]}</option>`).join('')}</select></div><div class="fg"><label>Status</label><select id="iStatus">${STATUS_KEYS.map(s=>`<option value="${s}">${SL[s]}</option>`).join('')}</select></div></div><div class="form-row full"><div class="fg"><label>Venue</label><input type="text" id="iVenue" placeholder="Hotel, tour, restaurant..."></div></div><div class="form-row" id="roomFields" style="display:none"><div class="fg"><label>Room Type</label><input type="text" id="iRoomType" placeholder="e.g. Deluxe Twin"></div><div class="fg"><label>Rooms</label><input type="number" id="iRoomCount" min="1" value="1"></div></div><div class="form-row"><div class="fg"><label>Start</label><input type="date" id="iStart" value="${g?g.start_date:todayStr()}"></div><div class="fg"><label>End</label><input type="date" id="iEnd" value="${g?g.start_date:todayStr()}"></div></div><div class="form-row tri"><div class="fg"><label>Pax</label><input type="number" id="iPax" min="1" value="${g?g.pax:2}"></div><div class="fg"><label>Price</label><input type="text" id="iPrice" placeholder="$0"></div><div class="fg"><label>Commission</label><input type="text" id="iCommission" placeholder="$0"></div></div><div class="form-row full"><div class="fg"><label>Memo</label><textarea id="iMemo" placeholder="Requests, notes"></textarea></div></div><div class="modal-foot"><button class="btn btn-secondary" onclick="closeItemModal()">Cancel</button><button class="btn btn-primary" onclick="saveItem()">Save</button></div>`;document.getElementById('itemModalOverlay').classList.add('active');toggleRoomFields()}
 function toggleRoomFields(){const s=document.getElementById('iType'),r=document.getElementById('roomFields');if(s&&r)r.style.display=s.value==='hotel'?'grid':'none'}
 function closeItemModal(){document.getElementById('itemModalOverlay').classList.remove('active')}
-async function saveItem(){
-  const gid=parseInt(document.getElementById('iGroupId').value);
-  const data={group_id:gid,type:document.getElementById('iType').value,status:document.getElementById('iStatus').value,venue:document.getElementById('iVenue').value.trim(),start_date:document.getElementById('iStart').value,end_date:document.getElementById('iEnd').value||document.getElementById('iStart').value,pax:parseInt(document.getElementById('iPax').value)||1,price:document.getElementById('iPrice').value.trim(),commission:document.getElementById('iCommission').value.trim(),memo:document.getElementById('iMemo').value.trim()};
-  if(data.type==='hotel'){data.room_type=(document.getElementById('iRoomType').value||'').trim();data.room_count=parseInt(document.getElementById('iRoomCount').value)||1}
-  if(!data.venue){alert('Venue is required.');return}
-  await dbInsertItem(data);openGroups.add(gid);closeItemModal();await loadAll();
-}
-async function deleteItem(gid,iid){if(!confirm('Delete this booking?'))return;await dbDeleteItem(iid);await loadAll()}
+async function saveItem(){const gid=parseInt(document.getElementById('iGroupId').value);const data={group_id:gid,type:document.getElementById('iType').value,status:document.getElementById('iStatus').value,venue:document.getElementById('iVenue').value.trim(),start_date:document.getElementById('iStart').value,end_date:document.getElementById('iEnd').value||document.getElementById('iStart').value,pax:parseInt(document.getElementById('iPax').value)||1,price:document.getElementById('iPrice').value.trim(),commission:document.getElementById('iCommission').value.trim(),memo:document.getElementById('iMemo').value.trim()};if(data.type==='hotel'){data.room_type=(document.getElementById('iRoomType').value||'').trim();data.room_count=parseInt(document.getElementById('iRoomCount').value)||1}if(!data.venue){alert('Venue is required.');return}await dbInsertItem(data);openGroups.add(gid);closeItemModal();await loadAll()}
+async function deleteItem(gid,iid){if(!await customConfirm('Delete this booking?'))return;await dbDeleteItem(iid);await loadAll()}
 
 /* ─── Init ─── */
-const savedUrl=localStorage.getItem('sb_url');
-const savedKey=localStorage.getItem('sb_key');
-if(savedUrl&&savedKey){
-  document.getElementById('mainApp').style.display='block';
-  document.getElementById('pageTitle').innerHTML='Tour Booking Manager <span>'+MONTHS[new Date().getMonth()]+' '+new Date().getDate()+', '+new Date().getFullYear()+'</span>';
-  db=window.supabase.createClient(savedUrl,savedKey);
-  setSyncStatus(true);
-  loadAll().then(()=>subscribeRealtime());
-}else{
-  document.getElementById('setupScreen').style.display='block';
-}
+if(sessionStorage.getItem('pw_ok')==='1'){initApp()}else{document.getElementById('passwordScreen').style.display='block'}
 </script>
 </body>
 </html>
