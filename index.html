@@ -118,10 +118,11 @@ function inlineEditGroup(gid,field,el,type){const g=groups.find(x=>x.id===gid);i
 function inlineEditGroupDate(gid,field,el){const g=groups.find(x=>x.id===gid);if(!g)return;openCal(el,g[field]||todayStr(),async function(val){await dbUpdateGroup(gid,{[field]:val});await loadAll()})}
 
 function closeAllDropdowns(){document.querySelectorAll('.cell-dropdown.open').forEach(d=>d.classList.remove('open'))}
-function showStatusDropdown(gid,iid){const dd=document.getElementById('sd-'+gid+'-'+iid);const w=dd.classList.contains('open');closeAllDropdowns();if(!w)dd.classList.add('open')}
-function showTypeDropdown(gid,iid){const dd=document.getElementById('td-'+gid+'-'+iid);const w=dd.classList.contains('open');closeAllDropdowns();if(!w)dd.classList.add('open')}
+let ddJustOpened=false;
+function showStatusDropdown(gid,iid){const dd=document.getElementById('sd-'+gid+'-'+iid);const w=dd.classList.contains('open');closeAllDropdowns();if(!w){dd.classList.add('open');ddJustOpened=true}}
+function showTypeDropdown(gid,iid){const dd=document.getElementById('td-'+gid+'-'+iid);const w=dd.classList.contains('open');closeAllDropdowns();if(!w){dd.classList.add('open');ddJustOpened=true}}
 async function setItemField(gid,iid,field,val){await dbUpdateItem(iid,{[field]:val});closeAllDropdowns();await loadAll()}
-document.addEventListener('click',closeAllDropdowns);
+document.addEventListener('click',()=>{if(ddJustOpened){ddJustOpened=false;return}closeAllDropdowns()});
 
 let calCb=null,calMonth=null,calYear=null,calSelected=null;
 function openCal(anchor,currentVal,callback){closeAllDropdowns();calCb=callback;const dt=new Date(currentVal+'T00:00:00');calMonth=dt.getMonth();calYear=dt.getFullYear();calSelected=currentVal;const popup=document.getElementById('calPopup');const rect=anchor.getBoundingClientRect();let top=rect.bottom+6,left=rect.left;if(top+320>window.innerHeight)top=rect.top-320;if(left+280>window.innerWidth)left=window.innerWidth-290;if(left<8)left=8;popup.style.top=top+'px';popup.style.left=left+'px';document.getElementById('calBackdrop').style.display='block';renderCal();requestAnimationFrame(()=>popup.classList.add('open'))}
