@@ -121,8 +121,8 @@ ${items.length?`<table class="item-table"><thead><tr><th>Type</th><th>Venue</th>
 </td>
 <td style="white-space:nowrap"><span class="editable" onclick="event.stopPropagation();inlineEditItem(${g.id},${i.id},'commission',this)">${esc(i.commission||'-')}</span></td>
 <td class="cell-rel" onclick="event.stopPropagation();openStatusPicker(event,${g.id},${i.id})"><span class="status-text ${i.status}"><span class="status-dot dot-${i.status}"></span>${SL[i.status]} ▾</span></td>
-<td style="text-align:center" onclick="event.stopPropagation()">${i.invoice_link?`<a href="${esc(i.invoice_link)}" target="_blank" class="invoice-link" onclick="event.stopPropagation()">${ISVG}</a><button class="icon-btn" onclick="event.stopPropagation();editInvoiceLink(${g.id},${i.id})" style="font-size:10px;width:22px;height:22px">✎</button>`:`<button class="invoice-add" onclick="event.stopPropagation();editInvoiceLink(${g.id},${i.id})">+</button>`}</td>
-<td class="drop-zone" data-gid="${g.id}" data-iid="${i.id}" onclick="event.stopPropagation()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="event.preventDefault();this.classList.remove('drag-over');handleDrop(event,${g.id},${i.id})"><button class="upload-btn" onclick="event.stopPropagation();uploadForItem(${g.id},${i.id})" title="Upload file">📤 Upload</button></td>
+<td class="drop-zone" onclick="event.stopPropagation()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="event.preventDefault();this.classList.remove('drag-over');handleInvoiceDrop(event,${g.id},${i.id})">${i.invoice_link?`<a href="${esc(i.invoice_link)}" target="_blank" class="invoice-link" onclick="event.stopPropagation()">${ISVG}</a><button class="icon-btn" onclick="event.stopPropagation();editInvoiceLink(${g.id},${i.id})" style="font-size:10px;width:22px;height:22px">✎</button>`:`<button class="invoice-add" onclick="event.stopPropagation();uploadInvoice(${g.id},${i.id})">+</button>`}</td>
+<td class="drop-zone" data-gid="${g.id}" data-iid="${i.id}" onclick="event.stopPropagation()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="event.preventDefault();this.classList.remove('drag-over');handleDrop(event,${g.id},${i.id})">${i.upload_folder_link?`<a href="${esc(i.upload_folder_link)}" target="_blank" class="invoice-link" onclick="event.stopPropagation()" title="Open folder">📁</a>`:''}<button class="upload-btn" onclick="event.stopPropagation();uploadForItem(${g.id},${i.id})" title="Upload file">📤</button></td>
 <td><span class="editable memo-cell" onclick="event.stopPropagation();openMemoPopup(${g.id},${i.id},this)">${esc(i.memo||'-')}</span></td>
 <td><div class="item-actions"><button class="icon-btn del" onclick="event.stopPropagation();deleteItem(${g.id},${i.id})">✕</button></div></td>
 </tr>`).join('')}</tbody></table>`:'<div class="empty" style="padding:30px"><p>No bookings yet. Add one to get started.</p></div>'}
@@ -363,47 +363,14 @@ function handleDrop(event,gid,iid){
   uploadFiles(gid,iid,files);
 }
 
-function handleGroupDrop(event,gid){
+function handleInvoiceDrop(event,gid,iid){
   const files=event.dataTransfer.files;
   if(!files.length)return;
   const g=groups.find(x=>x.id===gid);if(!g)return;
-  ensureGoogleAuth(async()=>{
-    const folders=getDriveFolders();
-    let parentId=null;
-    if(folders.length>1){
-      parentId=await chooseDriveFolder();
-      if(parentId===null)return;
-    }else if(folders.length===1){
-      parentId=folders[0].id;
-    }
-    const folderName=getGroupFolderName(g);
-    const folderId=await getOrCreateFolder(folderName,parentId);
-    const folderLink='https://drive.google.com/drive/folders/'+folderId;
-    if(!g.drive_link||g.drive_link!==folderLink){
-      await dbUpdateGroup(gid,{drive_link:folderLink});
-    }
-    for(const file of files){
-      await uploadFileToDrive(file,folderId);
-    }
-    customAlert(`${files.length} file(s) uploaded to Drive folder:\n${folderName}`);
-    await loadAll();
-  });
-}
-
-function uploadFiles(gid,iid,files){
-  const g=groups.find(x=>x.id===gid);if(!g)return;
   const it=(g.items||[]).find(x=>x.id===iid);if(!it)return;
   ensureGoogleAuth(async()=>{
-    const folders=getDriveFolders();
-    let parentId=null;
-    if(folders.length>1){
-      parentId=await chooseDriveFolder();
-      if(parentId===null)return;
-    }else if(folders.length===1){
-      parentId=folders[0].id;
-    }
-    const groupFolderName=getGroupFolderName(g);
-    const groupFolderId=await getOrCreateFolder(groupFolderName,parentId);
+    const groupFolderId=await getGroupDriveFolderId(g,gid);
+    if(!groupFolderId)return;
     const categoryName=CATEGORY_FOLDERS[it.type]||'その他';
     const categoryFolderId=await getOrCreateFolder(categoryName,groupFolderId);
     const itemFolderName=getItemFolderName(it);
@@ -413,10 +380,89 @@ function uploadFiles(gid,iid,files){
       const res=await uploadFileToDrive(file,itemFolderId);
       if(res&&res.id) lastFileLink='https://drive.google.com/file/d/'+res.id+'/view';
     }
-    if(lastFileLink){
-      await dbUpdateItem(iid,{invoice_link:lastFileLink});
+    if(lastFileLink) await dbUpdateItem(iid,{invoice_link:lastFileLink});
+    customAlert(`Invoice uploaded.`);
+    await loadAll();
+  });
+}
+
+function uploadInvoice(gid,iid){
+  const g=groups.find(x=>x.id===gid);if(!g)return;
+  const it=(g.items||[]).find(x=>x.id===iid);if(!it)return;
+  ensureGoogleAuth(async()=>{
+    const groupFolderId=await getGroupDriveFolderId(g,gid);
+    if(!groupFolderId)return;
+    const input=document.createElement('input');
+    input.type='file';input.multiple=false;
+    input.onchange=async()=>{
+      if(!input.files.length)return;
+      const categoryName=CATEGORY_FOLDERS[it.type]||'その他';
+      const categoryFolderId=await getOrCreateFolder(categoryName,groupFolderId);
+      const itemFolderName=getItemFolderName(it);
+      const itemFolderId=await getOrCreateFolder(itemFolderName,categoryFolderId);
+      const res=await uploadFileToDrive(input.files[0],itemFolderId);
+      if(res&&res.id){
+        const fileLink='https://drive.google.com/file/d/'+res.id+'/view';
+        await dbUpdateItem(iid,{invoice_link:fileLink});
+      }
+      customAlert('Invoice uploaded.');
+      await loadAll();
+    };
+    input.click();
+  });
+}
+
+async function getGroupDriveFolderId(g,gid){
+  if(g.drive_link){
+    const match=g.drive_link.match(/folders\/([a-zA-Z0-9_-]+)/);
+    if(match)return match[1];
+  }
+  const folders=getDriveFolders();
+  let parentId=null;
+  if(folders.length>1){
+    parentId=await chooseDriveFolder();
+    if(parentId===null)return null;
+  }else if(folders.length===1){
+    parentId=folders[0].id;
+  }
+  const folderName=getGroupFolderName(g);
+  const folderId=await getOrCreateFolder(folderName,parentId);
+  const folderLink='https://drive.google.com/drive/folders/'+folderId;
+  await dbUpdateGroup(gid,{drive_link:folderLink});
+  return folderId;
+}
+
+function handleGroupDrop(event,gid){
+  const files=event.dataTransfer.files;
+  if(!files.length)return;
+  const g=groups.find(x=>x.id===gid);if(!g)return;
+  ensureGoogleAuth(async()=>{
+    const folderId=await getGroupDriveFolderId(g,gid);
+    if(!folderId)return;
+    for(const file of files){
+      await uploadFileToDrive(file,folderId);
     }
-    customAlert(`${files.length} file(s) uploaded to:\n${groupFolderName}/${categoryName}/${itemFolderName}`);
+    customAlert(`${files.length} file(s) uploaded to Drive folder:\n${getGroupFolderName(g)}`);
+    await loadAll();
+  });
+}
+
+function uploadFiles(gid,iid,files){
+  const g=groups.find(x=>x.id===gid);if(!g)return;
+  const it=(g.items||[]).find(x=>x.id===iid);if(!it)return;
+  ensureGoogleAuth(async()=>{
+    const groupFolderId=await getGroupDriveFolderId(g,gid);
+    if(!groupFolderId)return;
+    const categoryName=CATEGORY_FOLDERS[it.type]||'その他';
+    const categoryFolderId=await getOrCreateFolder(categoryName,groupFolderId);
+    const itemFolderName=getItemFolderName(it);
+    const itemFolderId=await getOrCreateFolder(itemFolderName,categoryFolderId);
+    const folderLink='https://drive.google.com/drive/folders/'+itemFolderId;
+    await dbUpdateItem(iid,{upload_folder_link:folderLink});
+    for(const file of files){
+      await uploadFileToDrive(file,itemFolderId);
+    }
+    customAlert(`${files.length} file(s) uploaded to:\n${getGroupFolderName(g)}/${categoryName}/${itemFolderName}`);
     await loadAll();
   });
 }
@@ -425,33 +471,22 @@ function uploadForItem(gid,iid){
   const g=groups.find(x=>x.id===gid);if(!g)return;
   const it=(g.items||[]).find(x=>x.id===iid);if(!it)return;
   ensureGoogleAuth(async()=>{
-    const folders=getDriveFolders();
-    let parentId=null;
-    if(folders.length>1){
-      parentId=await chooseDriveFolder();
-      if(parentId===null)return;
-    }else if(folders.length===1){
-      parentId=folders[0].id;
-    }
+    const groupFolderId=await getGroupDriveFolderId(g,gid);
+    if(!groupFolderId)return;
     const input=document.createElement('input');
     input.type='file';input.multiple=true;
     input.onchange=async()=>{
       if(!input.files.length)return;
-      const groupFolderName=getGroupFolderName(g);
-      const groupFolderId=await getOrCreateFolder(groupFolderName,parentId);
       const categoryName=CATEGORY_FOLDERS[it.type]||'その他';
       const categoryFolderId=await getOrCreateFolder(categoryName,groupFolderId);
       const itemFolderName=getItemFolderName(it);
       const itemFolderId=await getOrCreateFolder(itemFolderName,categoryFolderId);
-      let lastFileLink='';
+      const folderLink='https://drive.google.com/drive/folders/'+itemFolderId;
+      await dbUpdateItem(iid,{upload_folder_link:folderLink});
       for(const file of input.files){
-        const res=await uploadFileToDrive(file,itemFolderId);
-        if(res&&res.id) lastFileLink='https://drive.google.com/file/d/'+res.id+'/view';
+        await uploadFileToDrive(file,itemFolderId);
       }
-      if(lastFileLink){
-        await dbUpdateItem(iid,{invoice_link:lastFileLink});
-      }
-      customAlert(`${input.files.length} file(s) uploaded to:\n${groupFolderName}/${categoryName}/${itemFolderName}`);
+      customAlert(`${input.files.length} file(s) uploaded to:\n${getGroupFolderName(g)}/${categoryName}/${itemFolderName}`);
       await loadAll();
     };
     input.click();
@@ -461,28 +496,16 @@ function uploadForItem(gid,iid){
 function uploadForGroup(gid){
   const g=groups.find(x=>x.id===gid);if(!g)return;
   ensureGoogleAuth(async()=>{
-    const folders=getDriveFolders();
-    let parentId=null;
-    if(folders.length>1){
-      parentId=await chooseDriveFolder();
-      if(parentId===null)return;
-    }else if(folders.length===1){
-      parentId=folders[0].id;
-    }
+    const folderId=await getGroupDriveFolderId(g,gid);
+    if(!folderId)return;
     const input=document.createElement('input');
     input.type='file';input.multiple=true;
     input.onchange=async()=>{
       if(!input.files.length)return;
-      const folderName=getGroupFolderName(g);
-      const folderId=await getOrCreateFolder(folderName,parentId);
-      const folderLink='https://drive.google.com/drive/folders/'+folderId;
-      if(!g.drive_link||g.drive_link!==folderLink){
-        await dbUpdateGroup(gid,{drive_link:folderLink});
-      }
       for(const file of input.files){
         await uploadFileToDrive(file,folderId);
       }
-      customAlert(`${input.files.length} file(s) uploaded to Drive folder:\n${folderName}`);
+      customAlert(`${input.files.length} file(s) uploaded to Drive folder:\n${getGroupFolderName(g)}`);
       await loadAll();
     };
     input.click();
