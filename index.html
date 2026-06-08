@@ -53,7 +53,8 @@ html,body{overscroll-behavior:none}
 .header h1{font-size:18px;text-align:center}
 .header h1 span{display:block;font-size:12px;margin:2px 0 0 0}
 .header-btns{width:100%;justify-content:center;gap:6px;flex-wrap:wrap}
-.stats{grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+.stats{grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px}
+.stat:nth-child(n+5){display:none}
 .stat{padding:10px 12px;border-radius:10px}
 .stat-val{font-size:22px}
 .stat-label{font-size:10px}
@@ -79,10 +80,14 @@ html,body{overscroll-behavior:none}
 .item-table{display:block;width:100%}
 .item-table thead{display:none}
 .item-table tbody{display:flex;flex-direction:column;gap:8px;padding:8px 12px}
-.item-table tbody tr{display:flex;flex-direction:column;gap:6px;padding:12px;border:1px solid var(--border-light);border-radius:10px;background:var(--surface)}
+.item-table tbody tr{display:grid;grid-template-columns:1fr 1fr;gap:4px 10px;padding:12px;border:1px solid var(--border-light);border-radius:10px;background:var(--surface)}
 .item-table tbody tr.row-cancelled{background:var(--status-cancelled-bg);border-color:var(--status-cancelled-bg)}
-.item-table td{display:flex;padding:0;border:none;font-size:13px;align-items:center;gap:6px}
+.item-table td{display:flex;padding:0;border:none;font-size:12px;align-items:center;gap:4px}
+.item-table td:nth-child(1){grid-column:1/-1}
+.item-table td:nth-child(2){grid-column:1/-1;font-size:14px;font-weight:600}
+.item-table td:nth-child(3){grid-column:1/-1}
 .item-table td:empty{display:none}
+.item-table td:last-child{grid-column:1/-1;justify-content:flex-end}
 .progress-bar{width:60px}
 .form-row,.form-row.tri{grid-template-columns:1fr}
 .modal{width:96vw;max-height:88vh;border-radius:14px}
