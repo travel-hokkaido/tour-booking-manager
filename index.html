@@ -204,6 +204,7 @@ function initGoogleDrive(){
 let pendingUpload=null;
 function ensureGoogleAuth(cb){
   if(gAccessToken){cb();return}
+  if(!tokenClient){try{initGoogleDrive()}catch(e){alert('Google Drive not available. Please reload the page.');return}}
   pendingUpload=cb;
   tokenClient.requestAccessToken();
 }
@@ -262,17 +263,22 @@ function uploadForGroup(gid){
     ensureGoogleAuth(async()=>{
       const folderName=getGroupFolderName(g);
       const folderId=await getOrCreateFolder(folderName);
+      const folderLink='https://drive.google.com/drive/folders/'+folderId;
+      if(!g.drive_link||g.drive_link!==folderLink){
+        await dbUpdateGroup(gid,{drive_link:folderLink});
+      }
       for(const file of input.files){
         await uploadFileToDrive(file,folderId);
       }
       alert(`${input.files.length} file(s) uploaded to Drive folder:\n${folderName}`);
+      await loadAll();
     });
   };
   input.click();
 }
 
 if(sessionStorage.getItem('pw_ok')==='1'){initApp()}else{document.getElementById('passwordScreen').style.display='block'}
-try{initGoogleDrive()}catch(e){}
+window.addEventListener('load',()=>{try{initGoogleDrive()}catch(e){console.warn('Google Drive init failed:',e)}});
 </script>
 </body>
 </html>
