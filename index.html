@@ -279,7 +279,7 @@ function uploadForGroup(gid){
   input.click();
 }
 
-if(sessionStorage.getItem('pw_ok')==='1'){initApp()}else{document.getElementById('passwordScreen').style.display='block'}
+initApp();
 window.addEventListener('load',()=>{try{initGoogleDrive()}catch(e){console.warn('Google Drive init failed:',e)}});
 </script>
 </body>
