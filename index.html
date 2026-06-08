@@ -276,11 +276,9 @@ function uploadForGroup(gid){
     input.click();
   });
 }
-  input.click();
-}
 
 initApp();
-window.addEventListener('load',()=>{try{initGoogleDrive()}catch(e){console.warn('Google Drive init failed:',e)}});
+window.addEventListener('load',()=>{try{initGoogleDrive()}catch(e){console.warn('Google Drive init:',e)}});
 </script>
 </body>
 </html>
