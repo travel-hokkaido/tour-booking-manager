@@ -29,6 +29,8 @@
 .range-toggle{border:1px dashed var(--border);background:none;border-radius:4px;font-size:11px;color:var(--text-muted);cursor:pointer;padding:1px 5px;margin-left:4px;font-family:var(--font);font-weight:600;transition:all .12s}.range-toggle:hover{border-color:var(--text-secondary);color:var(--text-secondary);background:var(--surface-alt)}
 .upload-btn{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border:1px dashed var(--border);border-radius:6px;background:none;cursor:pointer;color:var(--text-muted);font-size:11px;font-weight:600;transition:all .12s;font-family:var(--font)}.upload-btn:hover{border-color:var(--accent-hotel);color:var(--accent-hotel);background:var(--accent-hotel-light)}
 .upload-btn.has-file{border:1px solid var(--accent-hotel);background:var(--accent-hotel-light);color:var(--accent-hotel)}
+.drop-zone{text-align:center;transition:background .15s,outline .15s;outline:2px dashed transparent;outline-offset:-2px}
+.drop-zone.drag-over{background:var(--accent-hotel-light);outline:2px dashed var(--accent-hotel)}
 .gdrive-signin{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);cursor:pointer;font-size:12px;font-weight:600;font-family:var(--font);transition:all .12s}.gdrive-signin:hover{background:var(--surface-alt)}
 .memo-cell{font-size:12px;color:var(--text-secondary);max-width:160px;display:inline-block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .group-memo-btn{border:none;background:var(--surface-alt);width:26px;height:26px;border-radius:6px;cursor:pointer;font-size:13px;display:inline-flex;align-items:center;justify-content:center;transition:all .12s;opacity:.5}.group-memo-btn:hover{opacity:1;background:var(--border)}.group-memo-btn.has-memo{background:#D8F3DC;opacity:1}.group-memo-btn.has-memo:hover{background:#b7e4c7}
@@ -50,7 +52,7 @@
 <div id="passwordScreen" style="display:none"><div class="app"><div class="setup-box" style="text-align:center"><h2>🔒 Tour Booking Manager</h2><p>Enter the password to access the dashboard.</p><div class="fg" style="text-align:left"><label>Password</label><input type="password" id="pwInput" placeholder="Enter password" onkeydown="if(event.key==='Enter')checkPassword()"></div><div style="margin-top:16px"><button class="btn btn-primary" onclick="checkPassword()" style="width:100%">Log in</button></div><p id="pwError" style="color:var(--status-cancelled);margin-top:12px;display:none">Incorrect password</p></div></div></div>
 <div id="setupScreen" style="display:none"><div class="app"><div class="setup-box"><h2>Connect to Supabase</h2><p>Enter your Supabase project credentials. Find these in <code>Settings → Data API</code>.</p><div class="fg"><label>Supabase URL</label><input type="text" id="cfgUrl" placeholder="https://xxxxx.supabase.co"></div><div class="fg"><label>Anon Key</label><input type="text" id="cfgKey" placeholder="eyJhbGciOi..."></div><div style="margin-top:20px"><button class="btn btn-primary" onclick="connectSupabase()">Connect</button></div><p id="cfgError" style="color:var(--status-cancelled);margin-top:12px;display:none"></p></div></div></div>
 <div id="mainApp" style="display:none"><div class="app">
-<div class="header"><h1 id="pageTitle"></h1><div class="header-btns"><span class="sync-badge" id="syncBadge"><span class="sync-dot"></span><span></span></span><button class="btn btn-primary" onclick="openGroupModal()"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>New Group</span></button></div></div>
+<div class="header"><h1 id="pageTitle"></h1><div class="header-btns"><span class="sync-badge" id="syncBadge"><span class="sync-dot"></span><span></span></span><button class="btn btn-secondary btn-sm" onclick="setDriveFolder()" title="Set Drive upload folder">📁 Drive Folder</button><button class="btn btn-primary" onclick="openGroupModal()"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>New Group</span></button></div></div>
 <div class="stats" id="stats"></div>
 <div class="toolbar"><div class="search-box"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><input type="text" id="searchInput" placeholder="Search groups, contacts, venues..." oninput="render()"></div><select id="statusFilter" onchange="render()"><option value="all">All Statuses</option><option value="has-pending">Has Pending</option><option value="all-confirmed">All Confirmed</option><option value="has-cancelled">Has Cancelled</option></select><select id="monthFilter" onchange="render()"><option value="all">All Months</option></select><select id="sortOrder" onchange="render()"><option value="start-asc">Start date ↑</option><option value="start-desc">Start date ↓</option><option value="end-asc">End date ↑</option><option value="end-desc">End date ↓</option><option value="name-asc">Name A→Z</option><option value="name-desc">Name Z→A</option><option value="created-desc">Newest first</option><option value="created-asc">Oldest first</option></select><button class="btn btn-secondary past-toggle" id="pastToggle" onclick="togglePast()"><span id="pastToggleLabel">Show Past Tours</span><span class="past-count" id="pastCount"></span></button></div>
 <div class="group-list" id="groupList"></div>
@@ -102,25 +104,53 @@ function render(){renderStats();updateMonthFilter();const{activeList,pastList}=g
 
 function renderGroupCard(g,isPast){const isOpen=openGroups.has(g.id),items=g.items||[],confirmed=items.filter(i=>i.status==='confirmed').length,total=items.length,pct=total?Math.round(confirmed/total*100):0,gCancelled=isGroupCancelled(g),tc={};items.forEach(i=>{if(i.status!=='cancelled')tc[i.type]=(tc[i.type]||0)+1});
 return`<div class="group-card ${isOpen?'open':''} ${isPast?'past':''} ${gCancelled?'group-cancelled':''}" data-gid="${g.id}">
-<div class="group-header" onclick="toggleGroup(${g.id})"><div class="group-expand">▶</div><div class="group-info">
+<div class="group-header drop-zone" data-gid="${g.id}" onclick="toggleGroup(${g.id})" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="event.preventDefault();event.stopPropagation();this.classList.remove('drag-over');handleGroupDrop(event,${g.id})"><div class="group-expand">▶</div><div class="group-info">
 <div class="group-name"><span class="group-field-edit" onclick="event.stopPropagation();inlineEditGroup(${g.id},'name',this)">${esc(g.name)}</span>${isPast?'<span class="past-label">Ended</span>':''}${gCancelled?'<span class="group-cancelled-label">Cancelled</span>':''}<div class="progress-bar" title="${pct}%"><div class="progress-fill confirmed" style="width:${pct}%"></div><div class="progress-fill pending" style="width:${total?Math.round(items.filter(i=>i.status==='pending').length/total*100):0}%"></div></div></div>
 <div class="group-meta"><span onclick="event.stopPropagation();inlineEditGroup(${g.id},'contact',this)" class="group-field-edit">👤 ${esc(g.contact||'')}</span><span onclick="event.stopPropagation();inlineEditGroup(${g.id},'phone',this)" class="group-field-edit">📞 ${esc(g.phone||'')}</span><span onclick="event.stopPropagation();inlineEditGroupDate(${g.id},'start_date',this)" class="group-field-edit">📅 ${fmtDate(g.start_date)}</span><span style="pointer-events:none">~</span><span onclick="event.stopPropagation();inlineEditGroupDate(${g.id},'end_date',this)" class="group-field-edit">${fmtDate(g.end_date)}</span><span onclick="event.stopPropagation();inlineEditGroup(${g.id},'pax',this,'number')" class="group-field-edit">👥 ${g.pax}</span><span>📋 ${confirmed}/${total} confirmed</span></div></div>
 <div class="group-tags">${Object.entries(tc).map(([tp,c])=>`<span class="tag tag-${tp}">${TL[tp]} ${c}</span>`).join('')}</div>
 <div class="group-actions-area" onclick="event.stopPropagation()">${g.drive_link?`<button class="drive-btn linked" onclick="window.open('${esc(g.drive_link)}','_blank')">${DSVG.linked}</button><button class="icon-btn" onclick="editDriveLink(${g.id})" style="font-size:11px">✎</button>`:`<button class="drive-btn unlinked" onclick="editDriveLink(${g.id})">${DSVG.unlinked}</button>`}<button class="group-memo-btn ${g.memo?'has-memo':''}" onclick="event.stopPropagation();openGroupMemo(${g.id},this)">📝</button><button class="upload-btn" onclick="event.stopPropagation();uploadForGroup(${g.id})" title="Upload to Drive">📤 Upload</button>${gCancelled?`<button class="btn btn-sm btn-secondary" onclick="restoreGroup(${g.id})" style="font-size:11px;padding:4px 10px">Undo Cancel</button>`:`<button class="btn btn-sm" onclick="cancelGroup(${g.id})" style="font-size:11px;padding:4px 10px;background:var(--status-cancelled-bg);color:var(--status-cancelled);border:none">Cancel All</button>`}<button class="icon-btn del" onclick="deleteGroup(${g.id})">✕</button></div></div>
 <div class="group-body"><div class="items-header"><span>Booking Items (${total})</span><button class="btn btn-sm btn-secondary" onclick="openItemModal(${g.id})"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> Add Booking</button></div>
-${items.length?`<table class="item-table"><thead><tr><th>Type</th><th>Venue</th><th>Date</th><th>Pax</th><th>Price</th><th>Comm.</th><th>Status</th><th>Invoice</th><th>Memo</th><th></th></tr></thead><tbody>${items.map(i=>`<tr class="${i.status==='cancelled'?'row-cancelled':''}">
+${items.length?`<table class="item-table"><thead><tr><th>Type</th><th>Venue</th><th>Date</th><th>Pax</th><th>Price</th><th>Comm.</th><th>Status</th><th>Invoice</th><th>Upload</th><th>Memo</th><th></th></tr></thead><tbody>${items.map(i=>`<tr class="${i.status==='cancelled'?'row-cancelled':''}">
 <td class="cell-rel" onclick="event.stopPropagation();openTypePicker(event,${g.id},${i.id})"><span class="tag tag-${i.type}" style="cursor:pointer">${TL[i.type]} ▾</span></td>
 <td><span class="editable" onclick="event.stopPropagation();inlineEditItem(${g.id},${i.id},'venue',this)">${esc(i.venue)}</span>${i.type==='hotel'?`<div class="room-info" onclick="event.stopPropagation()"><span class="room-tag editable" onclick="inlineEditItem(${g.id},${i.id},'room_type',this)">${esc(i.room_type||'Room type')}</span><span class="room-count editable" onclick="inlineEditItem(${g.id},${i.id},'room_count',this,'number')">× ${i.room_count||0}</span></div>`:''}</td>
 <td style="white-space:nowrap"><span class="editable" onclick="event.stopPropagation();inlineEditItemDate(${g.id},${i.id},'start_date',this)">${fmtDate(i.start_date)}</span>${i.start_date!==i.end_date?` ~ <span class="editable end-date-edit" data-iid="${i.id}" onclick="event.stopPropagation();inlineEditItemDate(${g.id},${i.id},'end_date',this)">${fmtDate(i.end_date)}</span>`:`<button class="range-toggle end-date-edit" data-iid="${i.id}" onclick="event.stopPropagation();inlineEditItemDate(${g.id},${i.id},'end_date',this)" title="Add end date">~+</button>`}${i.type!=='hotel'?`<div class="time-info"><span class="editable time-edit" onclick="event.stopPropagation();inlineEditItem(${g.id},${i.id},'time',this)">${esc(i.time||'Set time')}</span></div>`:''}</td>
 <td style="text-align:center"><span class="editable" onclick="event.stopPropagation();inlineEditItem(${g.id},${i.id},'pax',this,'number')">${i.pax}</span></td>
-<td style="white-space:nowrap"><span class="editable" onclick="event.stopPropagation();inlineEditItem(${g.id},${i.id},'price',this)">${esc(i.price||'-')}</span></td>
+<td style="white-space:nowrap" onclick="event.stopPropagation()">
+  ${(()=>{const prices=i.prices||[i.price||''];return prices.map((p,pi)=>`<span class="editable" onclick="editPrice(${g.id},${i.id},${pi},this)">${esc(p||'-')}</span>`).join('<br>')})()}
+  <button class="invoice-add" onclick="event.stopPropagation();addPrice(${g.id},${i.id})" title="Add price" style="font-size:12px;width:20px;height:20px;margin-left:2px">+</button>
+</td>
 <td style="white-space:nowrap"><span class="editable" onclick="event.stopPropagation();inlineEditItem(${g.id},${i.id},'commission',this)">${esc(i.commission||'-')}</span></td>
 <td class="cell-rel" onclick="event.stopPropagation();openStatusPicker(event,${g.id},${i.id})"><span class="status-text ${i.status}"><span class="status-dot dot-${i.status}"></span>${SL[i.status]} ▾</span></td>
 <td style="text-align:center" onclick="event.stopPropagation()">${i.invoice_link?`<a href="${esc(i.invoice_link)}" target="_blank" class="invoice-link" onclick="event.stopPropagation()">${ISVG}</a><button class="icon-btn" onclick="event.stopPropagation();editInvoiceLink(${g.id},${i.id})" style="font-size:10px;width:22px;height:22px">✎</button>`:`<button class="invoice-add" onclick="event.stopPropagation();editInvoiceLink(${g.id},${i.id})">+</button>`}</td>
+<td class="drop-zone" data-gid="${g.id}" data-iid="${i.id}" onclick="event.stopPropagation()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="event.preventDefault();this.classList.remove('drag-over');handleDrop(event,${g.id},${i.id})"><button class="upload-btn" onclick="event.stopPropagation();uploadForItem(${g.id},${i.id})" title="Upload file">📤 Upload</button></td>
 <td><span class="editable memo-cell" onclick="event.stopPropagation();openMemoPopup(${g.id},${i.id},this)">${esc(i.memo||'-')}</span></td>
 <td><div class="item-actions"><button class="icon-btn del" onclick="event.stopPropagation();deleteItem(${g.id},${i.id})">✕</button></div></td>
 </tr>`).join('')}</tbody></table>`:'<div class="empty" style="padding:30px"><p>No bookings yet. Add one to get started.</p></div>'}
 </div></div>`}
+
+function editPrice(gid,iid,idx,el){
+  const g=groups.find(x=>x.id===gid);if(!g)return;
+  const it=(g.items||[]).find(x=>x.id===iid);if(!it)return;
+  const prices=it.prices||[it.price||''];
+  const input=document.createElement('input');input.className='inline-input';input.type='text';input.value=prices[idx]||'';input.style.width='80px';
+  const orig=el.innerHTML;el.innerHTML='';el.appendChild(input);input.focus();input.select();
+  const commit=async()=>{
+    prices[idx]=input.value.trim();
+    const cleaned=prices.filter(p=>p!=='');
+    await dbUpdateItem(iid,{prices:cleaned,price:cleaned.join(', ')});
+    await loadAll();
+  };
+  input.addEventListener('blur',commit);
+  input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();input.blur()}if(e.key==='Escape'){el.innerHTML=orig;input.removeEventListener('blur',commit)}});
+}
+async function addPrice(gid,iid){
+  const g=groups.find(x=>x.id===gid);if(!g)return;
+  const it=(g.items||[]).find(x=>x.id===iid);if(!it)return;
+  const prices=it.prices||[it.price||''];
+  prices.push('');
+  await dbUpdateItem(iid,{prices});
+  await loadAll();
+}
 
 function inlineEditItem(gid,iid,field,el,type){const g=groups.find(x=>x.id===gid);if(!g)return;const it=(g.items||[]).find(x=>x.id===iid);if(!it)return;let val=it[field]||'';if(type==='number')val=it[field]||0;const input=document.createElement('input');input.className='inline-input';input.type=type||'text';input.value=val;if(type==='number'){input.min='0';input.style.width='60px'}const orig=el.innerHTML;el.innerHTML='';el.appendChild(input);input.focus();input.select();const commit=async()=>{let v=input.value.trim();if(type==='number')v=parseInt(v)||0;if(v===''&&field==='venue'){el.innerHTML=orig;return}await dbUpdateItem(iid,{[field]:v});await loadAll()};input.addEventListener('blur',commit);input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();input.blur()}if(e.key==='Escape'){el.innerHTML=orig;input.removeEventListener('blur',commit)}})}
 function inlineEditItemDate(gid,iid,field,el){const g=groups.find(x=>x.id===gid);if(!g)return;const it=(g.items||[]).find(x=>x.id===iid);if(!it)return;const minDate=field==='end_date'?it.start_date:null;const defaultDate=it[field]||g.start_date||todayStr();openCal(el,defaultDate,async function(val){await dbUpdateItem(iid,{[field]:val});await loadAll();if(field==='start_date'&&it.type==='hotel'){setTimeout(()=>{const row=document.querySelector(`[data-gid="${gid}"] .item-table tbody`);if(!row)return;const endEl=row.querySelector(`.end-date-edit[data-iid="${iid}"]`);if(endEl)inlineEditItemDate(gid,iid,'end_date',endEl)},200)}},minDate,g.start_date,g.end_date)}
@@ -155,6 +185,7 @@ function renderCal(){document.getElementById('calTitle').textContent=fmtMonth(ca
 function calPick(y,m,d){const dt=new Date(y,m,d);const val=`${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;if(calCb)calCb(val);closeCal()}
 
 function customConfirm(msg){return new Promise(resolve=>{const c=document.getElementById('confirmContainer');c.innerHTML=`<div class="confirm-overlay"><div class="confirm-box"><p>${msg}</p><div class="confirm-btns"><button class="btn btn-secondary" id="cfmNo">Cancel</button><button class="btn btn-primary" id="cfmYes" style="background:var(--status-cancelled);min-width:80px">Delete</button></div></div></div>`;document.getElementById('cfmYes').onclick=()=>{c.innerHTML='';resolve(true)};document.getElementById('cfmNo').onclick=()=>{c.innerHTML='';resolve(false)}})}
+function customAlert(msg){return new Promise(resolve=>{const c=document.getElementById('confirmContainer');c.innerHTML=`<div class="confirm-overlay"><div class="confirm-box"><p>${msg}</p><div class="confirm-btns"><button class="btn btn-primary" id="cfmOk" style="min-width:80px">OK</button></div></div></div>`;document.getElementById('cfmOk').onclick=()=>{c.innerHTML='';resolve()}})}
 
 let memoGid=null,memoIid=null,memoMode=null;
 function openMemoPopup(gid,iid,anchor){const g=groups.find(x=>x.id===gid);if(!g)return;const it=(g.items||[]).find(x=>x.id===iid);if(!it)return;memoGid=gid;memoIid=iid;memoMode='item';showMemoAt(anchor,it.memo||'')}
@@ -176,20 +207,22 @@ async function deleteGroup(gid){const g=groups.find(x=>x.id===gid);if(!g)return;
 
 function openGroupModal(){document.getElementById('groupModalTitle').textContent='Add New Group';document.getElementById('groupModalBody').innerHTML=`<div class="form-row full"><div class="fg"><label>Group Name</label><input type="text" id="gName" placeholder="e.g. Jeju 3N4D Family Trip"></div></div><div class="form-row"><div class="fg"><label>Lead Guest Name</label><input type="text" id="gContact" placeholder="John Doe"></div><div class="fg"><label>Phone</label><input type="text" id="gPhone" placeholder="010-0000-0000"></div></div><div class="form-row tri"><div class="fg"><label>Trip Start</label><input type="text" id="gStart" value="${fmtDate(todayStr())}" data-val="${todayStr()}" readonly onclick="openModalCal(this,'gStart')" style="cursor:pointer"></div><div class="fg"><label>Trip End</label><input type="text" id="gEnd" value="${fmtDate(todayStr())}" data-val="${todayStr()}" readonly onclick="openModalCal(this,'gEnd')" style="cursor:pointer"></div><div class="fg"><label>Pax</label><input type="number" id="gPax" min="1" value="2" style="width:100%"></div></div><div class="form-row full"><div class="fg"><label>Memo</label><textarea id="gMemo" placeholder="Group-wide notes"></textarea></div></div><div class="modal-foot"><button class="btn btn-secondary" onclick="closeGroupModal()">Cancel</button><button class="btn btn-primary" onclick="saveGroup()">Save</button></div>`;document.getElementById('groupModalOverlay').classList.add('active')}
 function closeGroupModal(){document.getElementById('groupModalOverlay').classList.remove('active')}
-async function saveGroup(){const data={name:document.getElementById('gName').value.trim(),contact:document.getElementById('gContact').value.trim(),phone:document.getElementById('gPhone').value.trim(),start_date:document.getElementById('gStart').dataset.val,end_date:document.getElementById('gEnd').dataset.val,pax:parseInt(document.getElementById('gPax').value)||1,memo:document.getElementById('gMemo').value.trim()};if(!data.name){alert('Group name is required.');return}await db.from('groups').insert(data);closeGroupModal();await loadAll()}
+async function saveGroup(){const data={name:document.getElementById('gName').value.trim(),contact:document.getElementById('gContact').value.trim(),phone:document.getElementById('gPhone').value.trim(),start_date:document.getElementById('gStart').dataset.val,end_date:document.getElementById('gEnd').dataset.val,pax:parseInt(document.getElementById('gPax').value)||1,memo:document.getElementById('gMemo').value.trim()};if(!data.name){customAlert('Group name is required.');return}await db.from('groups').insert(data);closeGroupModal();await loadAll()}
 
 function openItemModal(gid){const g=groups.find(x=>x.id===gid);document.getElementById('itemModalTitle').textContent='Add Booking';document.getElementById('itemModalBody').innerHTML=`<input type="hidden" id="iGroupId" value="${gid}"><div class="form-row"><div class="fg"><label>Type</label><select id="iType" onchange="toggleRoomFields()">${TYPE_KEYS.map(tp=>`<option value="${tp}">${TL[tp]}</option>`).join('')}</select></div><div class="fg"><label>Status</label><select id="iStatus">${STATUS_KEYS.map(s=>`<option value="${s}">${SL[s]}</option>`).join('')}</select></div></div><div class="form-row full"><div class="fg"><label>Venue</label><input type="text" id="iVenue" placeholder="Hotel, tour, restaurant..."></div></div><div class="form-row" id="roomFields" style="display:none"><div class="fg"><label>Room Type</label><input type="text" id="iRoomType" placeholder="e.g. Deluxe Twin"></div><div class="fg"><label>Rooms</label><input type="number" id="iRoomCount" min="1" value="1"></div></div><div class="form-row"><div class="fg"><label>Start</label><input type="text" id="iStart" value="${fmtDate(g?g.start_date:todayStr())}" data-val="${g?g.start_date:todayStr()}" readonly onclick="openItemModalCal(this,'iStart')" style="cursor:pointer"></div><div class="fg"><label>End</label><input type="text" id="iEnd" value="${fmtDate(g?g.start_date:todayStr())}" data-val="${g?g.start_date:todayStr()}" readonly onclick="openItemModalCal(this,'iEnd')" style="cursor:pointer"></div></div><div class="form-row" id="timeField" style="display:none"><div class="fg"><label>Time</label><input type="text" id="iTime" placeholder="e.g. 12:00, 18:30"></div></div><div class="form-row tri"><div class="fg"><label>Pax</label><input type="number" id="iPax" min="1" value="${g?g.pax:2}"></div><div class="fg"><label>Price</label><input type="text" id="iPrice" placeholder="$0"></div><div class="fg"><label>Commission</label><input type="text" id="iCommission" placeholder="$0"></div></div><div class="form-row full"><div class="fg"><label>Memo</label><textarea id="iMemo" placeholder="Requests, notes"></textarea></div></div><div class="modal-foot"><button class="btn btn-secondary" onclick="closeItemModal()">Cancel</button><button class="btn btn-primary" onclick="saveItem()">Save</button></div>`;document.getElementById('itemModalOverlay').classList.add('active');toggleRoomFields()}
 function openItemModalCal(el,fieldId){const cur=el.dataset.val||todayStr();const minDate=fieldId==='iEnd'?document.getElementById('iStart').dataset.val:null;const gid=parseInt(document.getElementById('iGroupId').value);const g=groups.find(x=>x.id===gid);openCal(el,minDate||cur,function(val){el.dataset.val=val;el.value=fmtDate(val);if(fieldId==='iStart'){const endEl=document.getElementById('iEnd');if(endEl.dataset.val<val){endEl.dataset.val=val;endEl.value=fmtDate(val)}const typ=document.getElementById('iType').value;if(typ==='hotel')setTimeout(()=>openItemModalCal(endEl,'iEnd'),100)}},minDate,g?g.start_date:null,g?g.end_date:null)}
 function toggleRoomFields(){const s=document.getElementById('iType'),r=document.getElementById('roomFields'),t=document.getElementById('timeField');if(s&&r)r.style.display=s.value==='hotel'?'grid':'none';if(s&&t)t.style.display=s.value!=='hotel'?'grid':'none'}
 function closeItemModal(){document.getElementById('itemModalOverlay').classList.remove('active')}
-async function saveItem(){const gid=parseInt(document.getElementById('iGroupId').value);const data={group_id:gid,type:document.getElementById('iType').value,status:document.getElementById('iStatus').value,venue:document.getElementById('iVenue').value.trim(),start_date:document.getElementById('iStart').dataset.val,end_date:document.getElementById('iEnd').dataset.val||document.getElementById('iStart').dataset.val,pax:parseInt(document.getElementById('iPax').value)||1,price:document.getElementById('iPrice').value.trim(),commission:document.getElementById('iCommission').value.trim(),memo:document.getElementById('iMemo').value.trim()};if(data.type==='hotel'){data.room_type=(document.getElementById('iRoomType').value||'').trim();data.room_count=parseInt(document.getElementById('iRoomCount').value)||1}else{data.time=(document.getElementById('iTime').value||'').trim()}if(!data.venue){alert('Venue is required.');return}await dbInsertItem(data);openGroups.add(gid);closeItemModal();await loadAll()}
+async function saveItem(){const gid=parseInt(document.getElementById('iGroupId').value);const data={group_id:gid,type:document.getElementById('iType').value,status:document.getElementById('iStatus').value,venue:document.getElementById('iVenue').value.trim(),start_date:document.getElementById('iStart').dataset.val,end_date:document.getElementById('iEnd').dataset.val||document.getElementById('iStart').dataset.val,pax:parseInt(document.getElementById('iPax').value)||1,price:document.getElementById('iPrice').value.trim(),commission:document.getElementById('iCommission').value.trim(),memo:document.getElementById('iMemo').value.trim()};if(data.type==='hotel'){data.room_type=(document.getElementById('iRoomType').value||'').trim();data.room_count=parseInt(document.getElementById('iRoomCount').value)||1}else{data.time=(document.getElementById('iTime').value||'').trim()}if(!data.venue){customAlert('Venue is required.');return}await dbInsertItem(data);openGroups.add(gid);closeItemModal();await loadAll()}
 async function deleteItem(gid,iid){if(!await customConfirm('Delete this booking?'))return;await dbDeleteItem(iid);await loadAll()}
 
 /* ─── Google Drive Upload ─── */
 const GOOGLE_CLIENT_ID='776189752429-ac7pgsit3t82irstspkolm8oir0564bl.apps.googleusercontent.com';
-const DRIVE_SCOPE='https://www.googleapis.com/auth/drive.file';
+const DRIVE_SCOPE='https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive';
 let gAccessToken=null;
 let tokenClient=null;
+function getDriveFolders(){try{return JSON.parse(localStorage.getItem('drive_folders')||'[]')}catch(e){return[]}}
+function saveDriveFolders(list){localStorage.setItem('drive_folders',JSON.stringify(list))}
 
 function initGoogleDrive(){
   tokenClient=google.accounts.oauth2.initTokenClient({
@@ -204,7 +237,7 @@ function initGoogleDrive(){
 let pendingUpload=null;
 function ensureGoogleAuth(cb){
   if(gAccessToken){cb();return}
-  if(!tokenClient){try{initGoogleDrive()}catch(e){alert('Google Drive not available. Please reload the page.');return}}
+  if(!tokenClient){try{initGoogleDrive()}catch(e){customAlert('Google Drive not available. Please reload the page.');return}}
   pendingUpload=cb;
   tokenClient.requestAccessToken();
 }
@@ -248,21 +281,200 @@ async function uploadFileToDrive(file,folderId){
   return data;
 }
 
+async function setDriveFolder(){
+  const folders=getDriveFolders();
+  const c=document.getElementById('promptContainer');
+  c.innerHTML=`<div class="prompt-overlay"><div class="prompt-box" style="width:480px">
+    <h3>📁 Drive Folders</h3>
+    <div id="driveFolderList" style="margin-bottom:14px;max-height:200px;overflow-y:auto">${folders.length?folders.map((f,i)=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)"><span style="flex:1;font-size:13px;font-weight:600">${esc(f.name)}</span><span style="font-size:11px;color:var(--text-muted)">${f.id.substring(0,12)}...</span><button class="icon-btn del" onclick="removeDriveFolder(${i})" style="width:24px;height:24px;font-size:12px">✕</button></div>`).join(''):'<p style="font-size:13px;color:var(--text-muted)">No folders registered.</p>'}</div>
+    <div style="border-top:1px solid var(--border);padding-top:14px">
+      <div class="fg" style="margin-bottom:8px"><label>Folder Name</label><input type="text" id="dfName" placeholder="e.g. 2026 Bookings"></div>
+      <div class="fg"><label>Folder URL</label><input type="text" id="dfUrl" placeholder="https://drive.google.com/drive/folders/..."></div>
+    </div>
+    <div class="prompt-btns" style="margin-top:14px"><button class="btn btn-secondary btn-sm" onclick="closeDriveFolderModal()">Close</button><button class="btn btn-primary btn-sm" onclick="addDriveFolder()">Add Folder</button></div>
+  </div></div>`;
+}
+function closeDriveFolderModal(){document.getElementById('promptContainer').innerHTML=''}
+function addDriveFolder(){
+  const name=document.getElementById('dfName').value.trim();
+  const url=document.getElementById('dfUrl').value.trim();
+  if(!name||!url){customAlert('Please enter both name and URL.');return}
+  let folderId='';
+  const match=url.match(/folders\/([a-zA-Z0-9_-]+)/);
+  if(match)folderId=match[1]; else folderId=url;
+  const folders=getDriveFolders();
+  folders.push({name,id:folderId});
+  saveDriveFolders(folders);
+  setDriveFolder();
+}
+function removeDriveFolder(idx){
+  const folders=getDriveFolders();
+  folders.splice(idx,1);
+  saveDriveFolders(folders);
+  setDriveFolder();
+}
+let folderChoiceResolve=null;
+function chooseDriveFolder(){
+  return new Promise(resolve=>{
+    const folders=getDriveFolders();
+    if(folders.length===0){resolve(null);return}
+    if(folders.length===1){resolve(folders[0].id);return}
+    folderChoiceResolve=resolve;
+    const c=document.getElementById('promptContainer');
+    c.innerHTML=`<div class="prompt-overlay"><div class="prompt-box"><h3>Select upload folder</h3><div style="margin-top:12px">${folders.map((f,i)=>`<button class="btn btn-secondary" style="width:100%;margin-bottom:8px;justify-content:flex-start" onclick="pickDriveFolder(${i})">${esc(f.name)}</button>`).join('')}</div><div class="prompt-btns" style="margin-top:10px"><button class="btn btn-secondary btn-sm" onclick="pickDriveFolder(-1)">Cancel</button></div></div></div>`;
+  });
+}
+function pickDriveFolder(idx){
+  document.getElementById('promptContainer').innerHTML='';
+  if(folderChoiceResolve){
+    if(idx<0)folderChoiceResolve(null);
+    else{const folders=getDriveFolders();folderChoiceResolve(folders[idx].id)}
+    folderChoiceResolve=null;
+  }
+}
+
 function getGroupFolderName(g){
   const s=g.start_date||'';
   const e=g.end_date||'';
-  return `${s}_${e}_${g.name}`.replace(/[\/\\:*?"<>|]/g,'_');
+  const startFmt=s.replace(/-/g,'');
+  const endFmt=e?e.substring(5).replace(/-/g,''):'';
+  return `${startFmt}_${endFmt} ${g.name}`.replace(/[\/\\:*?"<>|]/g,'_');
+}
+
+const CATEGORY_FOLDERS={hotel:'ホテル',activity:'アクティビティ',restaurant:'レストラン',transport:'交通',etc:'その他'};
+
+function getItemFolderName(item){
+  const s=item.start_date||'';
+  const e=item.end_date||'';
+  const startFmt=s.replace(/-/g,'');
+  if(item.type==='hotel'){
+    const startDt=new Date(s+'T00:00:00');
+    const endDt=new Date(e+'T00:00:00');
+    const nights=Math.max(1,Math.round((endDt-startDt)/(1000*60*60*24)));
+    return `${startFmt}_${nights}泊 ${item.venue}`.replace(/[\/\\:*?"<>|]/g,'_');
+  }
+  const endFmt=e&&e!==s?'_'+e.substring(5).replace(/-/g,''):'';
+  return `${startFmt}${endFmt} ${item.venue}`.replace(/[\/\\:*?"<>|]/g,'_');
+}
+
+function handleDrop(event,gid,iid){
+  const files=event.dataTransfer.files;
+  if(!files.length)return;
+  uploadFiles(gid,iid,files);
+}
+
+function handleGroupDrop(event,gid){
+  const files=event.dataTransfer.files;
+  if(!files.length)return;
+  const g=groups.find(x=>x.id===gid);if(!g)return;
+  ensureGoogleAuth(async()=>{
+    const folders=getDriveFolders();
+    let parentId=null;
+    if(folders.length>1){
+      parentId=await chooseDriveFolder();
+      if(parentId===null)return;
+    }else if(folders.length===1){
+      parentId=folders[0].id;
+    }
+    const folderName=getGroupFolderName(g);
+    const folderId=await getOrCreateFolder(folderName,parentId);
+    const folderLink='https://drive.google.com/drive/folders/'+folderId;
+    if(!g.drive_link||g.drive_link!==folderLink){
+      await dbUpdateGroup(gid,{drive_link:folderLink});
+    }
+    for(const file of files){
+      await uploadFileToDrive(file,folderId);
+    }
+    customAlert(`${files.length} file(s) uploaded to Drive folder:\n${folderName}`);
+    await loadAll();
+  });
+}
+
+function uploadFiles(gid,iid,files){
+  const g=groups.find(x=>x.id===gid);if(!g)return;
+  const it=(g.items||[]).find(x=>x.id===iid);if(!it)return;
+  ensureGoogleAuth(async()=>{
+    const folders=getDriveFolders();
+    let parentId=null;
+    if(folders.length>1){
+      parentId=await chooseDriveFolder();
+      if(parentId===null)return;
+    }else if(folders.length===1){
+      parentId=folders[0].id;
+    }
+    const groupFolderName=getGroupFolderName(g);
+    const groupFolderId=await getOrCreateFolder(groupFolderName,parentId);
+    const categoryName=CATEGORY_FOLDERS[it.type]||'その他';
+    const categoryFolderId=await getOrCreateFolder(categoryName,groupFolderId);
+    const itemFolderName=getItemFolderName(it);
+    const itemFolderId=await getOrCreateFolder(itemFolderName,categoryFolderId);
+    let lastFileLink='';
+    for(const file of files){
+      const res=await uploadFileToDrive(file,itemFolderId);
+      if(res&&res.id) lastFileLink='https://drive.google.com/file/d/'+res.id+'/view';
+    }
+    if(lastFileLink){
+      await dbUpdateItem(iid,{invoice_link:lastFileLink});
+    }
+    customAlert(`${files.length} file(s) uploaded to:\n${groupFolderName}/${categoryName}/${itemFolderName}`);
+    await loadAll();
+  });
+}
+
+function uploadForItem(gid,iid){
+  const g=groups.find(x=>x.id===gid);if(!g)return;
+  const it=(g.items||[]).find(x=>x.id===iid);if(!it)return;
+  ensureGoogleAuth(async()=>{
+    const folders=getDriveFolders();
+    let parentId=null;
+    if(folders.length>1){
+      parentId=await chooseDriveFolder();
+      if(parentId===null)return;
+    }else if(folders.length===1){
+      parentId=folders[0].id;
+    }
+    const input=document.createElement('input');
+    input.type='file';input.multiple=true;
+    input.onchange=async()=>{
+      if(!input.files.length)return;
+      const groupFolderName=getGroupFolderName(g);
+      const groupFolderId=await getOrCreateFolder(groupFolderName,parentId);
+      const categoryName=CATEGORY_FOLDERS[it.type]||'その他';
+      const categoryFolderId=await getOrCreateFolder(categoryName,groupFolderId);
+      const itemFolderName=getItemFolderName(it);
+      const itemFolderId=await getOrCreateFolder(itemFolderName,categoryFolderId);
+      let lastFileLink='';
+      for(const file of input.files){
+        const res=await uploadFileToDrive(file,itemFolderId);
+        if(res&&res.id) lastFileLink='https://drive.google.com/file/d/'+res.id+'/view';
+      }
+      if(lastFileLink){
+        await dbUpdateItem(iid,{invoice_link:lastFileLink});
+      }
+      customAlert(`${input.files.length} file(s) uploaded to:\n${groupFolderName}/${categoryName}/${itemFolderName}`);
+      await loadAll();
+    };
+    input.click();
+  });
 }
 
 function uploadForGroup(gid){
   const g=groups.find(x=>x.id===gid);if(!g)return;
-  ensureGoogleAuth(()=>{
+  ensureGoogleAuth(async()=>{
+    const folders=getDriveFolders();
+    let parentId=null;
+    if(folders.length>1){
+      parentId=await chooseDriveFolder();
+      if(parentId===null)return;
+    }else if(folders.length===1){
+      parentId=folders[0].id;
+    }
     const input=document.createElement('input');
     input.type='file';input.multiple=true;
     input.onchange=async()=>{
       if(!input.files.length)return;
       const folderName=getGroupFolderName(g);
-      const folderId=await getOrCreateFolder(folderName);
+      const folderId=await getOrCreateFolder(folderName,parentId);
       const folderLink='https://drive.google.com/drive/folders/'+folderId;
       if(!g.drive_link||g.drive_link!==folderLink){
         await dbUpdateGroup(gid,{drive_link:folderLink});
@@ -270,7 +482,7 @@ function uploadForGroup(gid){
       for(const file of input.files){
         await uploadFileToDrive(file,folderId);
       }
-      alert(`${input.files.length} file(s) uploaded to Drive folder:\n${folderName}`);
+      customAlert(`${input.files.length} file(s) uploaded to Drive folder:\n${folderName}`);
       await loadAll();
     };
     input.click();
