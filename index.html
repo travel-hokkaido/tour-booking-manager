@@ -97,7 +97,7 @@ html,body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent}
 .items-header span{font-size:11px}
 .items-header .btn{font-size:12px;padding:8px 14px}
 
-/* Item cards */
+/* Item cards - accordion */
 .item-table{display:block;width:100%}
 .item-table thead{display:none}
 .item-table tbody{display:flex;flex-direction:column;gap:0;padding:0}
@@ -105,37 +105,43 @@ html,body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent}
   display:flex;flex-direction:column;gap:0;
   padding:0;margin:0 16px 10px;
   border:1px solid var(--border);border-radius:14px;
-  background:var(--surface);overflow:hidden;
+  background:var(--surface);overflow:hidden;cursor:pointer;
 }
 .item-table tbody tr.row-cancelled{background:var(--status-cancelled-bg);border-color:rgba(193,56,46,.2)}
 .item-table td{display:flex;padding:10px 14px;border:none;border-bottom:1px solid var(--border-light);font-size:14px;align-items:center;gap:8px;min-height:44px}
 .item-table td:last-child{border-bottom:none}
 
-/* Type cell */
+/* Visible: Type, Venue, Date (1,2,3) */
 .item-table td:nth-child(1){background:var(--surface-alt);padding:8px 14px;min-height:auto}
-/* Venue cell */
 .item-table td:nth-child(2){font-weight:600;font-size:15px}
-/* Date cell */
-.item-table td:nth-child(3){font-size:13px;color:var(--text-secondary)}
+.item-table td:nth-child(3){font-size:13px;color:var(--text-secondary);border-bottom:none}
+
+/* Hidden by default: 4-11 */
+.item-table td:nth-child(n+4){display:none}
+
+/* Show when expanded */
+.item-table tbody tr.expanded td:nth-child(n+4){display:flex}
+.item-table tbody tr.expanded td:nth-child(3){border-bottom:1px solid var(--border-light)}
+
 /* Pax */
-.item-table td:nth-child(4):before{content:'Pax: ';font-size:11px;color:var(--text-muted);font-weight:600}
+.item-table tbody tr.expanded td:nth-child(4):before{content:'Pax: ';font-size:11px;color:var(--text-muted);font-weight:600}
 /* Price */
-.item-table td:nth-child(5):before{content:'Price: ';font-size:11px;color:var(--text-muted);font-weight:600}
+.item-table tbody tr.expanded td:nth-child(5):before{content:'Price: ';font-size:11px;color:var(--text-muted);font-weight:600}
 /* Commission */
-.item-table td:nth-child(6):before{content:'Comm: ';font-size:11px;color:var(--text-muted);font-weight:600}
+.item-table tbody tr.expanded td:nth-child(6):before{content:'Comm: ';font-size:11px;color:var(--text-muted);font-weight:600}
 /* Status */
-.item-table td:nth-child(7){background:var(--surface-alt);padding:10px 14px}
+.item-table tbody tr.expanded td:nth-child(7){background:var(--surface-alt);padding:10px 14px}
 /* Invoice */
-.item-table td:nth-child(8){justify-content:flex-start;gap:10px}
-.item-table td:nth-child(8):before{content:'Invoice: ';font-size:11px;color:var(--text-muted);font-weight:600}
+.item-table tbody tr.expanded td:nth-child(8){justify-content:flex-start;gap:10px}
+.item-table tbody tr.expanded td:nth-child(8):before{content:'Invoice: ';font-size:11px;color:var(--text-muted);font-weight:600}
 /* Upload */
-.item-table td:nth-child(9){justify-content:flex-start;gap:10px}
-.item-table td:nth-child(9):before{content:'Files: ';font-size:11px;color:var(--text-muted);font-weight:600}
+.item-table tbody tr.expanded td:nth-child(9){justify-content:flex-start;gap:10px}
+.item-table tbody tr.expanded td:nth-child(9):before{content:'Files: ';font-size:11px;color:var(--text-muted);font-weight:600}
 /* Memo */
-.item-table td:nth-child(10):before{content:'Memo: ';font-size:11px;color:var(--text-muted);font-weight:600}
-.item-table td:nth-child(10) .memo-cell{max-width:none;white-space:normal}
+.item-table tbody tr.expanded td:nth-child(10):before{content:'Memo: ';font-size:11px;color:var(--text-muted);font-weight:600}
+.item-table tbody tr.expanded td:nth-child(10) .memo-cell{max-width:none;white-space:normal}
 /* Delete */
-.item-table td:nth-child(11){justify-content:center;background:var(--surface-alt);padding:8px}
+.item-table tbody tr.expanded td:nth-child(11){justify-content:center;background:var(--surface-alt);padding:8px}
 .item-table td:nth-child(11) .icon-btn{width:100%;height:36px;border-radius:8px;font-size:13px;color:var(--status-cancelled)}
 .item-table td:nth-child(11) .icon-btn:before{content:'Delete '}
 
@@ -666,6 +672,15 @@ function uploadForGroup(gid){
 
 initApp();
 window.addEventListener('load',()=>{try{initGoogleDrive()}catch(e){console.warn('Google Drive init:',e)}});
+
+/* Mobile accordion toggle */
+document.addEventListener('click',e=>{
+  if(window.innerWidth>700)return;
+  const tr=e.target.closest('.item-table tbody tr');
+  if(!tr)return;
+  if(e.target.closest('button,a,select,.editable,.inline-input,.cell-rel,.upload-btn,.invoice-add,.invoice-link,.icon-btn,.status-text,.tag,.drop-zone'))return;
+  tr.classList.toggle('expanded');
+});
 </script>
 </body>
 </html>
