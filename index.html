@@ -256,11 +256,11 @@ function getGroupFolderName(g){
 
 function uploadForGroup(gid){
   const g=groups.find(x=>x.id===gid);if(!g)return;
-  const input=document.createElement('input');
-  input.type='file';input.multiple=true;
-  input.onchange=async()=>{
-    if(!input.files.length)return;
-    ensureGoogleAuth(async()=>{
+  ensureGoogleAuth(()=>{
+    const input=document.createElement('input');
+    input.type='file';input.multiple=true;
+    input.onchange=async()=>{
+      if(!input.files.length)return;
       const folderName=getGroupFolderName(g);
       const folderId=await getOrCreateFolder(folderName);
       const folderLink='https://drive.google.com/drive/folders/'+folderId;
@@ -272,8 +272,10 @@ function uploadForGroup(gid){
       }
       alert(`${input.files.length} file(s) uploaded to Drive folder:\n${folderName}`);
       await loadAll();
-    });
-  };
+    };
+    input.click();
+  });
+}
   input.click();
 }
 
