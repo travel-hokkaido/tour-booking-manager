@@ -1,5 +1,5 @@
 const { google } = require('googleapis');
-const formidable = require('formidable');
+const { formidable } = require('formidable');
 const fs = require('fs');
 
 const SCOPES = ['https://www.googleapis.com/auth/drive'];
