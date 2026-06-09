@@ -313,18 +313,16 @@ function inlineEditGroupDate(gid,field,el){const g=groups.find(x=>x.id===gid);if
 
 function closePicker(){document.getElementById('floatingPicker').classList.remove('open');document.getElementById('pickerBackdrop').style.display='none'}
 function openStatusPicker(ev,gid,iid){
-  const rect=ev.currentTarget.getBoundingClientRect();
   const fp=document.getElementById('floatingPicker');
   fp.innerHTML=STATUS_KEYS.map(s=>`<button class="${s}" onclick="event.stopPropagation();pickField(${gid},${iid},'status','${s}')"><span class="status-dot dot-${s}"></span>${SL[s]}</button>`).join('');
-  fp.style.top=(rect.bottom+4)+'px';fp.style.left=rect.left+'px';
+  if(window.innerWidth<=700){fp.style.cssText='position:fixed;z-index:1300;top:50%;left:50%;transform:translate(-50%,-50%)'}else{const rect=ev.currentTarget.getBoundingClientRect();fp.style.top=(rect.bottom+4)+'px';fp.style.left=rect.left+'px';fp.style.transform=''}
   document.getElementById('pickerBackdrop').style.display='block';
   fp.classList.add('open');
 }
 function openTypePicker(ev,gid,iid){
-  const rect=ev.currentTarget.getBoundingClientRect();
   const fp=document.getElementById('floatingPicker');
   fp.innerHTML=TYPE_KEYS.map(tp=>`<button onclick="event.stopPropagation();pickField(${gid},${iid},'type','${tp}')"><span class="tag tag-${tp}">${TL[tp]}</span></button>`).join('');
-  fp.style.top=(rect.bottom+4)+'px';fp.style.left=rect.left+'px';
+  if(window.innerWidth<=700){fp.style.cssText='position:fixed;z-index:1300;top:50%;left:50%;transform:translate(-50%,-50%)'}else{const rect=ev.currentTarget.getBoundingClientRect();fp.style.top=(rect.bottom+4)+'px';fp.style.left=rect.left+'px';fp.style.transform=''}
   document.getElementById('pickerBackdrop').style.display='block';
   fp.classList.add('open');
 }
