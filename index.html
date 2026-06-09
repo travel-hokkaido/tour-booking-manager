@@ -97,29 +97,31 @@ html,body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent}
 .items-header span{font-size:11px}
 .items-header .btn{font-size:12px;padding:8px 14px}
 
-/* Item cards - summary only */
+/* Item cards - simple list */
 .item-table{display:block;width:100%}
 .item-table thead{display:none}
-.item-table tbody{display:flex;flex-direction:column;gap:0;padding:8px 16px}
+.item-table tbody{display:flex;flex-direction:column;gap:0;padding:0 12px 8px}
 .item-table tbody tr{
-  display:grid;grid-template-columns:auto 1fr auto;grid-template-rows:auto auto;
-  gap:2px 8px;align-items:center;
-  padding:10px 14px;margin:0 0 8px;
-  border:1px solid var(--border);border-radius:12px;
-  background:var(--surface);cursor:pointer;
+  display:flex;align-items:center;
+  padding:11px 4px;margin:0;
+  border:none;border-bottom:1px solid var(--border-light);border-radius:0;
+  background:transparent;cursor:pointer;min-height:44px;gap:10px;
 }
-.item-table tbody tr.row-cancelled{background:var(--status-cancelled-bg);border-color:rgba(193,56,46,.2)}
-/* Only show type, venue, date, status */
-.item-table td{display:none;padding:0;border:none;font-size:14px;align-items:center;gap:6px}
-/* Row 1: type + venue */
-.item-table td:nth-child(1){display:flex;grid-row:1;grid-column:1}
-.item-table td:nth-child(2){display:block;grid-row:1;grid-column:2;font-weight:600;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-/* Row 2: date + status */
-.item-table td:nth-child(3){display:flex;grid-row:2;grid-column:1/3;font-size:11px;color:var(--text-secondary);white-space:nowrap;padding-top:2px}
-.item-table td:nth-child(7){display:flex;grid-row:1/3;grid-column:3;align-self:center}
+.item-table tbody tr:last-child{border-bottom:none}
+.item-table tbody tr.row-cancelled{opacity:.45}
+.item-table td{display:none;padding:0;border:none;font-size:13px;align-items:center;gap:0}
+/* Type: color bar */
+.item-table td:nth-child(1){display:flex;width:4px;align-self:stretch;border-radius:2px;overflow:hidden;flex-shrink:0}
+.item-table td:nth-child(1) .tag{width:4px;padding:0;font-size:0;border-radius:2px;height:100%;min-height:28px}
+/* Venue */
+.item-table td:nth-child(2){display:block;flex:1;font-weight:500;font-size:14px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.3}
+/* Date */
+.item-table td:nth-child(3){display:block;font-size:11px;color:var(--text-muted);white-space:nowrap;flex-shrink:0}
+/* Status dot */
+.item-table td:nth-child(7){display:flex;flex-shrink:0}
 .item-table td:nth-child(7) .status-text{font-size:0}
-.item-table td:nth-child(7) .status-dot{margin:0;width:10px;height:10px}
-/* Disable all interactions inside list items */
+.item-table td:nth-child(7) .status-dot{margin:0;width:8px;height:8px}
+/* Disable all interactions inside list */
 .item-table td *{pointer-events:none}
 .item-table tbody tr{pointer-events:auto}
 
