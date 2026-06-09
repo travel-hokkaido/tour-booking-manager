@@ -102,18 +102,21 @@ html,body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent}
 .item-table thead{display:none}
 .item-table tbody{display:flex;flex-direction:column;gap:0;padding:8px 16px}
 .item-table tbody tr{
-  display:flex;align-items:center;gap:10px;
+  display:grid;grid-template-columns:auto 1fr auto auto;align-items:center;gap:8px;
   padding:12px 14px;margin:0 0 8px;
   border:1px solid var(--border);border-radius:12px;
   background:var(--surface);cursor:pointer;
 }
 .item-table tbody tr.row-cancelled{background:var(--status-cancelled-bg);border-color:rgba(193,56,46,.2)}
-/* Only show type, venue, date */
+/* Only show type, venue, date, status */
 .item-table td{display:none;padding:0;border:none;font-size:14px;align-items:center;gap:6px}
 .item-table td:nth-child(1){display:flex}
-.item-table td:nth-child(2){display:flex;flex:1;font-weight:600;font-size:14px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item-table td:nth-child(2){display:flex;font-weight:600;font-size:14px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .item-table td:nth-child(3){display:flex;font-size:11px;color:var(--text-secondary);white-space:nowrap}
-.item-table td:nth-child(7){display:flex;margin-left:auto}
+.item-table td:nth-child(7){display:flex}
+/* Disable all interactions inside list items */
+.item-table td *{pointer-events:none}
+.item-table tbody tr{pointer-events:auto}
 
 /* Mobile item detail modal */
 .mobile-detail-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(26,22,18,.4);backdrop-filter:blur(4px);z-index:1200;display:flex;align-items:flex-end;justify-content:center}
@@ -663,10 +666,7 @@ document.addEventListener('click',e=>{
   if(window.innerWidth>700)return;
   const tr=e.target.closest('.item-table tbody tr');
   if(!tr)return;
-  if(e.target.closest('button,a,select,.inline-input'))return;
   const gid=parseInt(tr.closest('[data-gid]').dataset.gid);
-  const tds=tr.querySelectorAll('td');
-  if(tds.length<4)return;
   const g=groups.find(x=>x.id===gid);if(!g)return;
   const idx=Array.from(tr.parentNode.children).indexOf(tr);
   const it=(g.items||[])[idx];if(!it)return;
