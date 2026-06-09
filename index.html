@@ -328,7 +328,7 @@ function editPrice(gid,iid,idx,el){
   const it=(g.items||[]).find(x=>x.id===iid);if(!it)return;
   const prices=it.prices||[it.price||''];
   const input=document.createElement('input');input.className='inline-input';input.type='text';input.value=prices[idx]||'';input.style.width='80px';
-  const orig=el.innerHTML;el.innerHTML='';el.appendChild(input);input.focus();input.select();
+  const orig=el.innerHTML;el.innerHTML='';el.appendChild(input);input.focus();input.setSelectionRange(input.value.length,input.value.length);
   const commit=async()=>{
     prices[idx]=input.value.trim();
     const cleaned=prices.filter(p=>p!=='');
@@ -347,7 +347,7 @@ async function addPrice(gid,iid){
   await loadAll();
 }
 
-function inlineEditItem(gid,iid,field,el,type){const g=groups.find(x=>x.id===gid);if(!g)return;const it=(g.items||[]).find(x=>x.id===iid);if(!it)return;let val=it[field]||'';if(type==='number')val=it[field]||0;const input=document.createElement('input');input.className='inline-input';input.type=type||'text';input.value=val;if(type==='number'){input.min='0';input.style.width='60px'}const orig=el.innerHTML;el.innerHTML='';el.appendChild(input);input.focus();input.select();let committed=false;const commit=async()=>{if(committed)return;committed=true;let v=input.value.trim();if(type==='number')v=parseInt(v)||0;if(v===''&&field==='venue'){el.innerHTML=orig;return}await dbUpdateItem(iid,{[field]:v});await loadAll()};let composing=false;input.addEventListener('compositionstart',()=>{composing=true});input.addEventListener('compositionend',()=>{composing=false});input.addEventListener('blur',()=>{if(composing){setTimeout(commit,50)}else{commit()}});input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();input.blur()}if(e.key==='Escape'){el.innerHTML=orig;committed=true}})}function inlineEditItemDate(gid,iid,field,el){const g=groups.find(x=>x.id===gid);if(!g)return;const it=(g.items||[]).find(x=>x.id===iid);if(!it)return;const minDate=field==='end_date'?it.start_date:null;const defaultDate=it[field]||g.start_date||todayStr();openCal(el,defaultDate,async function(val){await dbUpdateItem(iid,{[field]:val});await loadAll();if(field==='start_date'&&it.type==='hotel'){setTimeout(()=>{const row=document.querySelector(`[data-gid="${gid}"] .item-table tbody`);if(!row)return;const endEl=row.querySelector(`.end-date-edit[data-iid="${iid}"]`);if(endEl)inlineEditItemDate(gid,iid,'end_date',endEl)},200)}},minDate,g.start_date,g.end_date)}
+function inlineEditItem(gid,iid,field,el,type){const g=groups.find(x=>x.id===gid);if(!g)return;const it=(g.items||[]).find(x=>x.id===iid);if(!it)return;let val=it[field]||'';if(type==='number')val=it[field]||0;const input=document.createElement('input');input.className='inline-input';input.type=type||'text';input.value=val;if(type==='number'){input.min='0';input.style.width='60px'}const orig=el.innerHTML;el.innerHTML='';el.appendChild(input);input.focus();input.setSelectionRange(input.value.length,input.value.length);let committed=false;const commit=async()=>{if(committed)return;committed=true;let v=input.value.trim();if(type==='number')v=parseInt(v)||0;if(v===''&&field==='venue'){el.innerHTML=orig;return}await dbUpdateItem(iid,{[field]:v});await loadAll()};let composing=false;input.addEventListener('compositionstart',()=>{composing=true});input.addEventListener('compositionend',()=>{composing=false});input.addEventListener('blur',()=>{if(composing){setTimeout(commit,50)}else{commit()}});input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();input.blur()}if(e.key==='Escape'){el.innerHTML=orig;committed=true}})}function inlineEditItemDate(gid,iid,field,el){const g=groups.find(x=>x.id===gid);if(!g)return;const it=(g.items||[]).find(x=>x.id===iid);if(!it)return;const minDate=field==='end_date'?it.start_date:null;const defaultDate=it[field]||g.start_date||todayStr();openCal(el,defaultDate,async function(val){await dbUpdateItem(iid,{[field]:val});await loadAll();if(field==='start_date'&&it.type==='hotel'){setTimeout(()=>{const row=document.querySelector(`[data-gid="${gid}"] .item-table tbody`);if(!row)return;const endEl=row.querySelector(`.end-date-edit[data-iid="${iid}"]`);if(endEl)inlineEditItemDate(gid,iid,'end_date',endEl)},200)}},minDate,g.start_date,g.end_date)}
 function inlineEditGroup(gid,field,el,type){const g=groups.find(x=>x.id===gid);if(!g)return;let val=g[field]||'';if(type==='number')val=g[field]||0;const input=document.createElement('input');input.className='inline-input';input.type=type||'text';input.value=val;if(type==='number'){input.min='1';input.style.width='60px'}if(field==='name')input.style.width='280px';const orig=el.innerHTML;el.innerHTML='';el.appendChild(input);input.focus();input.select();const commit=async()=>{let v=input.value.trim();if(type==='number')v=parseInt(v)||1;if(v===''&&field==='name'){el.innerHTML=orig;return}await dbUpdateGroup(gid,{[field]:v});await loadAll()};input.addEventListener('blur',commit);input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();input.blur()}if(e.key==='Escape'){el.innerHTML=orig;input.removeEventListener('blur',commit)}})}
 function inlineEditGroupDate(gid,field,el){const g=groups.find(x=>x.id===gid);if(!g)return;const minDate=field==='end_date'?g.start_date:null;openCal(el,g[field]||todayStr(),async function(val){await dbUpdateGroup(gid,{[field]:val});await loadAll()},minDate)}
 
@@ -776,7 +776,6 @@ function mobileEditField(gid,iid,field,el,type){
   input.addEventListener('click',e=>{e.stopPropagation()});
   input.addEventListener('touchstart',e=>{e.stopPropagation()});
   const orig=el.innerHTML;el.innerHTML='';el.appendChild(input);
-  requestAnimationFrame(()=>{input.focus()});
   let committed=false;
   const commit=async()=>{if(committed)return;committed=true;let v=input.value.trim();if(type==='number')v=parseInt(v)||0;if(field==='venue'&&!v){el.innerHTML=orig;return}await dbUpdateItem(iid,{[field]:v});await loadAll();const gNew=groups.find(x=>x.id===gid);const itNew=(gNew.items||[]).find(x=>x.id===iid);if(itNew)openMobileDetail(gNew,itNew,gid)};
   let composing=false;
@@ -879,7 +878,6 @@ function groupEditField(gid,field,el,type){
   input.addEventListener('click',e=>{e.stopPropagation()});
   input.addEventListener('touchstart',e=>{e.stopPropagation()});
   const orig=el.innerHTML;el.innerHTML='';el.appendChild(input);
-  requestAnimationFrame(()=>{input.focus()});
   let committed=false;
   const commit=async()=>{if(committed)return;committed=true;let v=input.value.trim();if(type==='number')v=parseInt(v)||1;if(field==='name'&&!v){el.innerHTML=orig;return}await dbUpdateGroup(gid,{[field]:v});await loadAll();const gNew=groups.find(x=>x.id===gid);if(gNew)openGroupEditModal(gid)};
   let composing=false;
