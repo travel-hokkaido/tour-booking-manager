@@ -245,13 +245,39 @@ function showCfgError(msg){const el=document.getElementById('cfgError');el.textC
 function setSyncStatus(online){const b=document.getElementById('syncBadge');b.className='sync-badge '+(online?'online':'offline');b.innerHTML=`<span class="sync-dot ${online?'online':'offline'}"></span><span>${online?'Live':'Offline'}</span>`}
 function subscribeRealtime(){db.channel('all-changes').on('postgres_changes',{event:'*',schema:'public',table:'groups'},()=>loadAll()).on('postgres_changes',{event:'*',schema:'public',table:'items'},()=>loadAll()).subscribe()}
 async function loadAll(){const{data:gs}=await db.from('groups').select('*').order('id');const{data:its}=await db.from('items').select('*').order('id');groups=(gs||[]).map(g=>({...g,items:(its||[]).filter(i=>i.group_id===g.id)}));render()}
+async function checkDriveLinks(){
+  const fileIds=[];const linkMap={};
+  for(const g of groups){
+    if(g.drive_link){const m=g.drive_link.match(/folders\/([a-zA-Z0-9_-]+)/);if(m){fileIds.push(m[1]);linkMap[m[1]]={type:'group',id:g.id}}}
+    for(const it of(g.items||[])){
+      if(it.upload_folder_link){const m=it.upload_folder_link.match(/folders\/([a-zA-Z0-9_-]+)/);if(m){fileIds.push(m[1]);linkMap[m[1]]={type:'upload',id:it.id}}}
+      if(it.invoice_link){const m=it.invoice_link.match(/\/d\/([a-zA-Z0-9_-]+)/);if(m){fileIds.push(m[1]);linkMap[m[1]]={type:'invoice',id:it.id}}}
+    }
+  }
+  if(!fileIds.length)return;
+  try{
+    const res=await fetch('/api/check',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fileIds})});
+    if(!res.ok)return;
+    const{results}=await res.json();
+    let changed=false;
+    for(const[fid,valid]of Object.entries(results)){
+      if(!valid&&linkMap[fid]){
+        const info=linkMap[fid];
+        if(info.type==='group'){await db.from('groups').update({drive_link:''}).eq('id',info.id);changed=true}
+        else if(info.type==='upload'){await db.from('items').update({upload_folder_link:''}).eq('id',info.id);changed=true}
+        else if(info.type==='invoice'){await db.from('items').update({invoice_link:''}).eq('id',info.id);changed=true}
+      }
+    }
+    if(changed)await loadAll();
+  }catch(e){console.warn('Drive link check failed:',e)}
+}
 async function dbUpdateGroup(id,data){await db.from('groups').update(data).eq('id',id)}
 async function dbDeleteGroup(id){await db.from('groups').delete().eq('id',id)}
 async function dbInsertItem(data){await db.from('items').insert(data)}
 async function dbUpdateItem(id,data){await db.from('items').update(data).eq('id',id)}
 async function dbDeleteItem(id){await db.from('items').delete().eq('id',id)}
 async function dbUpdateAllItems(gid,data){await db.from('items').update(data).eq('group_id',gid)}
-function initApp(){const savedUrl=localStorage.getItem('sb_url'),savedKey=localStorage.getItem('sb_key');if(savedUrl&&savedKey){document.getElementById('mainApp').style.display='block';document.getElementById('pageTitle').innerHTML='Tour Booking Manager <span>'+MONTHS[new Date().getMonth()]+' '+new Date().getDate()+', '+new Date().getFullYear()+'</span>';db=window.supabase.createClient(savedUrl,savedKey);setSyncStatus(true);loadAll().then(()=>subscribeRealtime())}else{document.getElementById('setupScreen').style.display='block'}}
+function initApp(){const savedUrl=localStorage.getItem('sb_url'),savedKey=localStorage.getItem('sb_key');if(savedUrl&&savedKey){document.getElementById('mainApp').style.display='block';document.getElementById('pageTitle').innerHTML='Tour Booking Manager <span>'+MONTHS[new Date().getMonth()]+' '+new Date().getDate()+', '+new Date().getFullYear()+'</span>';db=window.supabase.createClient(savedUrl,savedKey);setSyncStatus(true);loadAll().then(()=>{subscribeRealtime();checkDriveLinks()})}else{document.getElementById('setupScreen').style.display='block'}}
 
 function activeItems(){return groups.filter(g=>!isGroupPast(g)).flatMap(g=>(g.items||[]))}
 function renderStats(){const items=activeItems(),active=items.filter(i=>i.status!=='cancelled'),pend=items.filter(i=>i.status==='pending').length,pastCount=groups.filter(g=>isGroupPast(g)).length;document.getElementById('stats').innerHTML=`<div class="stat"><div class="stat-label"><span class="stat-dot" style="background:var(--text-primary)"></span>Active Groups</div><div class="stat-val">${groups.filter(g=>!isGroupPast(g)).length}</div><div class="stat-sub">${active.length} bookings · ${pend} pending</div></div>${TYPE_KEYS.map(tp=>{const c=active.filter(i=>i.type===tp).length;return`<div class="stat"><div class="stat-label"><span class="stat-dot" style="background:var(--accent-${tp})"></span>${TL[tp]}</div><div class="stat-val">${c}</div><div class="stat-sub">total ${items.filter(i=>i.type===tp).length}</div></div>`}).join('')}`;document.getElementById('pastCount').textContent=pastCount>0?pastCount:''}
