@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tour Booking Manager</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="https://accounts.google.com/gsi/client"></script>
 <style>
 :root{--bg:#FAF8F5;--surface:#FFF;--surface-alt:#F3F0EB;--border:#E8E4DE;--border-light:#F0EDE8;--text-primary:#1A1612;--text-secondary:#7A7167;--text-muted:#A89F94;--accent-hotel:#2D6A4F;--accent-hotel-light:#D8F3DC;--accent-activity:#D4700A;--accent-activity-light:#FDE8CC;--accent-restaurant:#6C63FF;--accent-restaurant-light:#E8E6FF;--accent-transport:#0077B6;--accent-transport-light:#D0ECFA;--accent-etc:#888270;--accent-etc-light:#EDEAE4;--status-confirmed:#2D6A4F;--status-confirmed-bg:#D8F3DC;--status-pending:#D4700A;--status-pending-bg:#FDE8CC;--status-cancelled:#C1382E;--status-cancelled-bg:#FFE0DE;--radius:14px;--radius-sm:8px;--shadow:0 1px 3px rgba(26,22,18,.05),0 4px 14px rgba(26,22,18,.04);--shadow-lg:0 4px 20px rgba(26,22,18,.08),0 12px 36px rgba(26,22,18,.06);--font:'Segoe UI',system-ui,-apple-system,sans-serif}
 *{margin:0;padding:0;box-sizing:border-box}body{font-family:var(--font);background:var(--bg);color:var(--text-primary);min-height:100vh}.app{max-width:1320px;margin:0 auto;padding:28px 24px 80px}
@@ -338,7 +337,7 @@ function openTypePicker(ev,gid,iid){
   document.getElementById('pickerBackdrop').style.display='block';
   fp.classList.add('open');
 }
-async function pickField(gid,iid,field,val){closePicker();await dbUpdateItem(iid,{[field]:val});await loadAll()}
+async function pickField(gid,iid,field,val){closePicker();const g=groups.find(x=>x.id===gid);const it=(g&&g.items||[]).find(x=>x.id===iid);const prevStatus=it?it.status:null;await dbUpdateItem(iid,{[field]:val});if(field==='status')await renameFolderOnStatusChange(g,it,prevStatus,val);await loadAll()}
 
 let calCb=null,calMonth=null,calYear=null,calSelected=null,calMinDate=null,calRangeStart=null,calRangeEnd=null;
 function openCal(anchor,currentVal,callback,minDate,rangeStart,rangeEnd){closePicker();calCb=callback;calMinDate=minDate||null;calRangeStart=rangeStart||null;calRangeEnd=rangeEnd||null;const showDate=minDate||currentVal;const dt=new Date(showDate+'T00:00:00');calMonth=dt.getMonth();calYear=dt.getFullYear();calSelected=currentVal;const popup=document.getElementById('calPopup');if(window.innerWidth<=700){popup.style.top='50%';popup.style.left='50%';popup.style.transform='translate(-50%,-50%)'}else{const rect=anchor.getBoundingClientRect();let top=rect.bottom+6,left=rect.left;if(top+320>window.innerHeight)top=rect.top-320;if(left+280>window.innerWidth)left=window.innerWidth-290;if(left<8)left=8;popup.style.top=top+'px';popup.style.left=left+'px';popup.style.transform=''}document.getElementById('calBackdrop').style.display='block';renderCal();requestAnimationFrame(()=>popup.classList.add('open'))}
@@ -370,8 +369,10 @@ async function cancelGroup(gid){
   for(const it of(g.items||[])){
     if(it.status!=='cancelled'){
       await db.from('items').update({prev_status:it.status,status:'cancelled'}).eq('id',it.id);
+      await renameFolderOnStatusChange(g,it,it.status,'cancelled');
     }
   }
+  await renameGroupFolder(g,true);
   await loadAll();
 }
 async function restoreGroup(gid){
@@ -379,10 +380,12 @@ async function restoreGroup(gid){
   for(const it of(g.items||[])){
     const restore=it.prev_status||'pending';
     await db.from('items').update({status:restore,prev_status:null}).eq('id',it.id);
+    await renameFolderOnStatusChange(g,it,'cancelled',restore);
   }
+  await renameGroupFolder(g,false);
   await loadAll();
 }
-async function deleteGroup(gid){const g=groups.find(x=>x.id===gid);if(!g)return;if(!await customConfirm(`Delete "${g.name}" and all bookings?`))return;await dbDeleteGroup(gid);openGroups.delete(gid);await loadAll()}
+async function deleteGroup(gid){const g=groups.find(x=>x.id===gid);if(!g)return;if(!await customConfirm(`Delete "${g.name}" and all bookings?`))return;await deleteDriveFolder(g);await dbDeleteGroup(gid);openGroups.delete(gid);await loadAll()}
 
 function openGroupModal(){document.getElementById('groupModalTitle').textContent='Add New Group';document.getElementById('groupModalBody').innerHTML=`<div class="form-row full"><div class="fg"><label>Group Name</label><input type="text" id="gName" placeholder="e.g. Jeju 3N4D Family Trip"></div></div><div class="form-row"><div class="fg"><label>Lead Guest Name</label><input type="text" id="gContact" placeholder="John Doe"></div><div class="fg"><label>Phone</label><input type="text" id="gPhone" placeholder="010-0000-0000"></div></div><div class="form-row tri"><div class="fg"><label>Trip Start</label><input type="text" id="gStart" value="${fmtDate(todayStr())}" data-val="${todayStr()}" readonly onclick="openModalCal(this,'gStart')" style="cursor:pointer"></div><div class="fg"><label>Trip End</label><input type="text" id="gEnd" value="${fmtDate(todayStr())}" data-val="${todayStr()}" readonly onclick="openModalCal(this,'gEnd')" style="cursor:pointer"></div><div class="fg"><label>Pax</label><input type="number" id="gPax" min="1" value="2" style="width:100%"></div></div><div class="form-row full"><div class="fg"><label>Memo</label><textarea id="gMemo" placeholder="Group-wide notes"></textarea></div></div><div class="modal-foot"><button class="btn btn-secondary" onclick="closeGroupModal()">Cancel</button><button class="btn btn-primary" onclick="saveGroup()">Save</button></div>`;document.getElementById('groupModalOverlay').classList.add('active')}
 function closeGroupModal(){document.getElementById('groupModalOverlay').classList.remove('active')}
@@ -395,69 +398,18 @@ function closeItemModal(){document.getElementById('itemModalOverlay').classList.
 async function saveItem(){const gid=parseInt(document.getElementById('iGroupId').value);const data={group_id:gid,type:document.getElementById('iType').value,status:document.getElementById('iStatus').value,venue:document.getElementById('iVenue').value.trim(),start_date:document.getElementById('iStart').dataset.val,end_date:document.getElementById('iEnd').dataset.val||document.getElementById('iStart').dataset.val,pax:parseInt(document.getElementById('iPax').value)||1,price:document.getElementById('iPrice').value.trim(),commission:document.getElementById('iCommission').value.trim(),memo:document.getElementById('iMemo').value.trim()};if(data.type==='hotel'){data.room_type=(document.getElementById('iRoomType').value||'').trim();data.room_count=parseInt(document.getElementById('iRoomCount').value)||1}else{data.time=(document.getElementById('iTime').value||'').trim()}if(!data.venue){customAlert('Venue is required.');return}await dbInsertItem(data);openGroups.add(gid);closeItemModal();await loadAll()}
 async function deleteItem(gid,iid){if(!await customConfirm('Delete this booking?'))return;await dbDeleteItem(iid);await loadAll()}
 
-/* ─── Google Drive Upload ─── */
-const GOOGLE_CLIENT_ID='776189752429-ac7pgsit3t82irstspkolm8oir0564bl.apps.googleusercontent.com';
-const DRIVE_SCOPE='https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive';
-let gAccessToken=null;
-let tokenClient=null;
+/* ─── Google Drive Upload (Server-side via /api/upload) ─── */
 function getDriveFolders(){try{return JSON.parse(localStorage.getItem('drive_folders')||'[]')}catch(e){return[]}}
 function saveDriveFolders(list){localStorage.setItem('drive_folders',JSON.stringify(list))}
 
-function initGoogleDrive(){
-  tokenClient=google.accounts.oauth2.initTokenClient({
-    client_id:GOOGLE_CLIENT_ID,
-    scope:DRIVE_SCOPE,
-    callback:(resp)=>{
-      if(resp.access_token){gAccessToken=resp.access_token;if(pendingUpload)pendingUpload()}
-    }
-  });
-}
-
-let pendingUpload=null;
-function ensureGoogleAuth(cb){
-  if(gAccessToken){cb();return}
-  if(!tokenClient){try{initGoogleDrive()}catch(e){customAlert('Google Drive not available. Please reload the page.');return}}
-  pendingUpload=cb;
-  tokenClient.requestAccessToken();
-}
-
-async function createDriveFolder(folderName,parentId){
-  const meta={name:folderName,mimeType:'application/vnd.google-apps.folder'};
-  if(parentId)meta.parents=[parentId];
-  const res=await fetch('https://www.googleapis.com/drive/v3/files?supportsAllDrives=true',{
-    method:'POST',headers:{'Authorization':'Bearer '+gAccessToken,'Content-Type':'application/json'},
-    body:JSON.stringify(meta)
-  });
-  const data=await res.json();
-  return data.id;
-}
-
-async function findDriveFolder(folderName,parentId){
-  let q=`name='${folderName}' and mimeType='application/vnd.google-apps.folder' and trashed=false`;
-  if(parentId) q+=` and '${parentId}' in parents`;
-  const res=await fetch(`https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(q)}&supportsAllDrives=true&includeItemsFromAllDrives=true`,{
-    headers:{'Authorization':'Bearer '+gAccessToken}
-  });
-  const data=await res.json();
-  return data.files&&data.files.length>0?data.files[0].id:null;
-}
-
-async function getOrCreateFolder(folderName,parentId){
-  let id=await findDriveFolder(folderName,parentId);
-  if(!id) id=await createDriveFolder(folderName,parentId);
-  return id;
-}
-
-async function uploadFileToDrive(file,folderId){
-  const metadata={name:file.name,parents:[folderId]};
-  const form=new FormData();
-  form.append('metadata',new Blob([JSON.stringify(metadata)],{type:'application/json'}));
-  form.append('file',file);
-  const res=await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&supportsAllDrives=true',{
-    method:'POST',headers:{'Authorization':'Bearer '+gAccessToken},body:form
-  });
-  const data=await res.json();
-  return data;
+async function uploadToServer(files,folderPath,parentFolderId){
+  const formData=new FormData();
+  for(const file of files){formData.append('file',file)}
+  formData.append('folderPath',JSON.stringify(folderPath));
+  if(parentFolderId)formData.append('parentFolderId',parentFolderId);
+  const res=await fetch('/api/upload',{method:'POST',body:formData});
+  if(!res.ok){const err=await res.json();throw new Error(err.error||'Upload failed')}
+  return await res.json();
 }
 
 async function setDriveFolder(){
@@ -536,62 +488,7 @@ function getItemFolderName(item){
   return `${startFmt}${endFmt} ${item.venue}`.replace(/[\/\\:*?"<>|]/g,'_');
 }
 
-function handleDrop(event,gid,iid){
-  const files=event.dataTransfer.files;
-  if(!files.length)return;
-  uploadFiles(gid,iid,files);
-}
-
-function handleInvoiceDrop(event,gid,iid){
-  const files=event.dataTransfer.files;
-  if(!files.length)return;
-  const g=groups.find(x=>x.id===gid);if(!g)return;
-  const it=(g.items||[]).find(x=>x.id===iid);if(!it)return;
-  ensureGoogleAuth(async()=>{
-    const groupFolderId=await getGroupDriveFolderId(g,gid);
-    if(!groupFolderId)return;
-    const categoryName=CATEGORY_FOLDERS[it.type]||'その他';
-    const categoryFolderId=await getOrCreateFolder(categoryName,groupFolderId);
-    const itemFolderName=getItemFolderName(it);
-    const itemFolderId=await getOrCreateFolder(itemFolderName,categoryFolderId);
-    let lastFileLink='';
-    for(const file of files){
-      const res=await uploadFileToDrive(file,itemFolderId);
-      if(res&&res.id) lastFileLink='https://drive.google.com/file/d/'+res.id+'/view';
-    }
-    if(lastFileLink) await dbUpdateItem(iid,{invoice_link:lastFileLink});
-    customAlert(`Invoice uploaded.`);
-    await loadAll();
-  });
-}
-
-function uploadInvoice(gid,iid){
-  const g=groups.find(x=>x.id===gid);if(!g)return;
-  const it=(g.items||[]).find(x=>x.id===iid);if(!it)return;
-  ensureGoogleAuth(async()=>{
-    const groupFolderId=await getGroupDriveFolderId(g,gid);
-    if(!groupFolderId)return;
-    const input=document.createElement('input');
-    input.type='file';input.multiple=false;
-    input.onchange=async()=>{
-      if(!input.files.length)return;
-      const categoryName=CATEGORY_FOLDERS[it.type]||'その他';
-      const categoryFolderId=await getOrCreateFolder(categoryName,groupFolderId);
-      const itemFolderName=getItemFolderName(it);
-      const itemFolderId=await getOrCreateFolder(itemFolderName,categoryFolderId);
-      const res=await uploadFileToDrive(input.files[0],itemFolderId);
-      if(res&&res.id){
-        const fileLink='https://drive.google.com/file/d/'+res.id+'/view';
-        await dbUpdateItem(iid,{invoice_link:fileLink});
-      }
-      customAlert('Invoice uploaded.');
-      await loadAll();
-    };
-    input.click();
-  });
-}
-
-async function getGroupDriveFolderId(g,gid){
+async function getParentFolderId(g,gid){
   if(g.drive_link){
     const match=g.drive_link.match(/folders\/([a-zA-Z0-9_-]+)/);
     if(match)return match[1];
@@ -604,95 +501,192 @@ async function getGroupDriveFolderId(g,gid){
   }else if(folders.length===1){
     parentId=folders[0].id;
   }
-  const folderName=getGroupFolderName(g);
-  const folderId=await getOrCreateFolder(folderName,parentId);
-  const folderLink='https://drive.google.com/drive/folders/'+folderId;
-  await dbUpdateGroup(gid,{drive_link:folderLink});
-  return folderId;
+  return parentId;
 }
 
-function handleGroupDrop(event,gid){
+function handleDrop(event,gid,iid){
+  const files=event.dataTransfer.files;
+  if(!files.length)return;
+  uploadFiles(gid,iid,files);
+}
+
+async function handleInvoiceDrop(event,gid,iid){
   const files=event.dataTransfer.files;
   if(!files.length)return;
   const g=groups.find(x=>x.id===gid);if(!g)return;
-  ensureGoogleAuth(async()=>{
-    const folderId=await getGroupDriveFolderId(g,gid);
-    if(!folderId)return;
-    for(const file of files){
-      await uploadFileToDrive(file,folderId);
-    }
-    customAlert(`${files.length} file(s) uploaded to Drive folder:\n${getGroupFolderName(g)}`);
-    await loadAll();
-  });
-}
-
-function uploadFiles(gid,iid,files){
-  const g=groups.find(x=>x.id===gid);if(!g)return;
   const it=(g.items||[]).find(x=>x.id===iid);if(!it)return;
-  ensureGoogleAuth(async()=>{
-    const groupFolderId=await getGroupDriveFolderId(g,gid);
-    if(!groupFolderId)return;
+  try{
+    const parentId=await getParentFolderId(g,gid);
+    if(parentId===null&&getDriveFolders().length>1)return;
+    const groupFolderName=getGroupFolderName(g);
     const categoryName=CATEGORY_FOLDERS[it.type]||'その他';
-    const categoryFolderId=await getOrCreateFolder(categoryName,groupFolderId);
     const itemFolderName=getItemFolderName(it);
-    const itemFolderId=await getOrCreateFolder(itemFolderName,categoryFolderId);
-    const folderLink='https://drive.google.com/drive/folders/'+itemFolderId;
-    await dbUpdateItem(iid,{upload_folder_link:folderLink});
-    for(const file of files){
-      await uploadFileToDrive(file,itemFolderId);
+    const folderPath=[groupFolderName,categoryName,itemFolderName];
+    const result=await uploadToServer(Array.from(files),folderPath,parentId);
+    if(result.success){
+      if(!g.drive_link){
+        const groupLink='https://drive.google.com/drive/folders/'+result.folderId;
+        await dbUpdateGroup(gid,{drive_link:groupLink});
+      }
+      const lastFile=result.files[result.files.length-1];
+      if(lastFile)await dbUpdateItem(iid,{invoice_link:lastFile.link});
+      customAlert('Invoice uploaded.');
+      await loadAll();
     }
-    customAlert(`${files.length} file(s) uploaded to:\n${getGroupFolderName(g)}/${categoryName}/${itemFolderName}`);
-    await loadAll();
-  });
+  }catch(e){customAlert('Upload failed: '+e.message)}
 }
 
-function uploadForItem(gid,iid){
+async function uploadInvoice(gid,iid){
   const g=groups.find(x=>x.id===gid);if(!g)return;
   const it=(g.items||[]).find(x=>x.id===iid);if(!it)return;
-  ensureGoogleAuth(async()=>{
-    const groupFolderId=await getGroupDriveFolderId(g,gid);
-    if(!groupFolderId)return;
-    const input=document.createElement('input');
-    input.type='file';input.multiple=true;
-    input.onchange=async()=>{
-      if(!input.files.length)return;
+  const input=document.createElement('input');
+  input.type='file';input.multiple=false;
+  input.onchange=async()=>{
+    if(!input.files.length)return;
+    try{
+      const parentId=await getParentFolderId(g,gid);
+      if(parentId===null&&getDriveFolders().length>1)return;
+      const groupFolderName=getGroupFolderName(g);
       const categoryName=CATEGORY_FOLDERS[it.type]||'その他';
-      const categoryFolderId=await getOrCreateFolder(categoryName,groupFolderId);
       const itemFolderName=getItemFolderName(it);
-      const itemFolderId=await getOrCreateFolder(itemFolderName,categoryFolderId);
-      const folderLink='https://drive.google.com/drive/folders/'+itemFolderId;
-      await dbUpdateItem(iid,{upload_folder_link:folderLink});
-      for(const file of input.files){
-        await uploadFileToDrive(file,itemFolderId);
+      const folderPath=[groupFolderName,categoryName,itemFolderName];
+      const result=await uploadToServer(Array.from(input.files),folderPath,parentId);
+      if(result.success){
+        if(!g.drive_link){await dbUpdateGroup(gid,{drive_link:result.folderLink})}
+        const lastFile=result.files[result.files.length-1];
+        if(lastFile)await dbUpdateItem(iid,{invoice_link:lastFile.link});
+        customAlert('Invoice uploaded.');
+        await loadAll();
       }
-      customAlert(`${input.files.length} file(s) uploaded to:\n${getGroupFolderName(g)}/${categoryName}/${itemFolderName}`);
-      await loadAll();
-    };
-    input.click();
-  });
+    }catch(e){customAlert('Upload failed: '+e.message)}
+  };
+  input.click();
 }
 
-function uploadForGroup(gid){
+async function handleGroupDrop(event,gid){
+  const files=event.dataTransfer.files;
+  if(!files.length)return;
   const g=groups.find(x=>x.id===gid);if(!g)return;
-  ensureGoogleAuth(async()=>{
-    const folderId=await getGroupDriveFolderId(g,gid);
-    if(!folderId)return;
-    const input=document.createElement('input');
-    input.type='file';input.multiple=true;
-    input.onchange=async()=>{
-      if(!input.files.length)return;
-      for(const file of input.files){
-        await uploadFileToDrive(file,folderId);
-      }
-      customAlert(`${input.files.length} file(s) uploaded to Drive folder:\n${getGroupFolderName(g)}`);
+  try{
+    const parentId=await getParentFolderId(g,gid);
+    if(parentId===null&&getDriveFolders().length>1)return;
+    const groupFolderName=getGroupFolderName(g);
+    const folderPath=[groupFolderName];
+    const result=await uploadToServer(Array.from(files),folderPath,parentId);
+    if(result.success){
+      if(!g.drive_link)await dbUpdateGroup(gid,{drive_link:result.folderLink});
+      customAlert(`${files.length} file(s) uploaded to Drive folder:\n${groupFolderName}`);
       await loadAll();
-    };
-    input.click();
-  });
+    }
+  }catch(e){customAlert('Upload failed: '+e.message)}
+}
+
+async function uploadFiles(gid,iid,files){
+  const g=groups.find(x=>x.id===gid);if(!g)return;
+  const it=(g.items||[]).find(x=>x.id===iid);if(!it)return;
+  try{
+    const parentId=await getParentFolderId(g,gid);
+    if(parentId===null&&getDriveFolders().length>1)return;
+    const groupFolderName=getGroupFolderName(g);
+    const categoryName=CATEGORY_FOLDERS[it.type]||'その他';
+    const itemFolderName=getItemFolderName(it);
+    const folderPath=[groupFolderName,categoryName,itemFolderName];
+    const result=await uploadToServer(Array.from(files),folderPath,parentId);
+    if(result.success){
+      if(!g.drive_link)await dbUpdateGroup(gid,{drive_link:result.folderLink});
+      await dbUpdateItem(iid,{upload_folder_link:result.folderLink});
+      customAlert(`${files.length} file(s) uploaded to:\n${groupFolderName}/${categoryName}/${itemFolderName}`);
+      await loadAll();
+    }
+  }catch(e){customAlert('Upload failed: '+e.message)}
+}
+
+async function uploadForItem(gid,iid){
+  const g=groups.find(x=>x.id===gid);if(!g)return;
+  const it=(g.items||[]).find(x=>x.id===iid);if(!it)return;
+  const input=document.createElement('input');
+  input.type='file';input.multiple=true;
+  input.onchange=async()=>{
+    if(!input.files.length)return;
+    try{
+      const parentId=await getParentFolderId(g,gid);
+      if(parentId===null&&getDriveFolders().length>1)return;
+      const groupFolderName=getGroupFolderName(g);
+      const categoryName=CATEGORY_FOLDERS[it.type]||'その他';
+      const itemFolderName=getItemFolderName(it);
+      const folderPath=[groupFolderName,categoryName,itemFolderName];
+      const result=await uploadToServer(Array.from(input.files),folderPath,parentId);
+      if(result.success){
+        if(!g.drive_link)await dbUpdateGroup(gid,{drive_link:result.folderLink});
+        await dbUpdateItem(iid,{upload_folder_link:result.folderLink});
+        customAlert(`${input.files.length} file(s) uploaded to:\n${groupFolderName}/${categoryName}/${itemFolderName}`);
+        await loadAll();
+      }
+    }catch(e){customAlert('Upload failed: '+e.message)}
+  };
+  input.click();
+}
+
+async function uploadForGroup(gid){
+  const g=groups.find(x=>x.id===gid);if(!g)return;
+  const input=document.createElement('input');
+  input.type='file';input.multiple=true;
+  input.onchange=async()=>{
+    if(!input.files.length)return;
+    try{
+      const parentId=await getParentFolderId(g,gid);
+      if(parentId===null&&getDriveFolders().length>1)return;
+      const groupFolderName=getGroupFolderName(g);
+      const folderPath=[groupFolderName];
+      const result=await uploadToServer(Array.from(input.files),folderPath,parentId);
+      if(result.success){
+        if(!g.drive_link)await dbUpdateGroup(gid,{drive_link:result.folderLink});
+        customAlert(`${input.files.length} file(s) uploaded to Drive folder:\n${groupFolderName}`);
+        await loadAll();
+      }
+    }catch(e){customAlert('Upload failed: '+e.message)}
+  };
+  input.click();
+}
+
+async function renameFolderOnStatusChange(g,it,prevStatus,newStatus){
+  if(!it||!it.upload_folder_link)return;
+  const match=it.upload_folder_link.match(/folders\/([a-zA-Z0-9_-]+)/);
+  if(!match)return;
+  const folderId=match[1];
+  const baseName=getItemFolderName(it);
+  let newName=baseName;
+  if(newStatus==='cancelled'){
+    newName='【キャンセル】'+baseName;
+  }
+  try{
+    await fetch('/api/rename',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({folderId,newName})});
+  }catch(e){console.warn('Folder rename failed:',e)}
+}
+
+async function renameGroupFolder(g,isCancelled){
+  if(!g||!g.drive_link)return;
+  const match=g.drive_link.match(/folders\/([a-zA-Z0-9_-]+)/);
+  if(!match)return;
+  const folderId=match[1];
+  const baseName=getGroupFolderName(g);
+  const newName=isCancelled?'【キャンセル】'+baseName:baseName;
+  try{
+    await fetch('/api/rename',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({folderId,newName})});
+  }catch(e){console.warn('Group folder rename failed:',e)}
+}
+
+async function deleteDriveFolder(g){
+  if(!g||!g.drive_link)return;
+  const match=g.drive_link.match(/folders\/([a-zA-Z0-9_-]+)/);
+  if(!match)return;
+  const folderId=match[1];
+  try{
+    await fetch('/api/delete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({folderId})});
+  }catch(e){console.warn('Drive folder delete failed:',e)}
 }
 
 initApp();
-window.addEventListener('load',()=>{try{initGoogleDrive()}catch(e){console.warn('Google Drive init:',e)}});
 
 /* Mobile detail modal */
 document.addEventListener('click',e=>{
@@ -771,8 +765,11 @@ function mobileEditStatus(gid,iid){
 }
 async function mobilePickStatus(gid,iid,val){
   closePicker();
-  await dbUpdateItem(iid,{status:val});await loadAll();
-  const g=groups.find(x=>x.id===gid);const it=(g.items||[]).find(x=>x.id===iid);if(it)openMobileDetail(g,it,gid);
+  const g=groups.find(x=>x.id===gid);const it=(g&&g.items||[]).find(x=>x.id===iid);const prevStatus=it?it.status:null;
+  await dbUpdateItem(iid,{status:val});
+  if(it)await renameFolderOnStatusChange(g,it,prevStatus,val);
+  await loadAll();
+  const g2=groups.find(x=>x.id===gid);const it2=(g2&&g2.items||[]).find(x=>x.id===iid);if(it2)openMobileDetail(g2,it2,gid);
 }
 
 function mobileEditType(gid,iid){
