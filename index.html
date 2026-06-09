@@ -337,7 +337,7 @@ function openTypePicker(ev,gid,iid){
   document.getElementById('pickerBackdrop').style.display='block';
   fp.classList.add('open');
 }
-async function pickField(gid,iid,field,val){closePicker();const g=groups.find(x=>x.id===gid);const it=(g&&g.items||[]).find(x=>x.id===iid);const prevStatus=it?it.status:null;await dbUpdateItem(iid,{[field]:val});if(field==='status')await renameFolderOnStatusChange(g,it,prevStatus,val);await loadAll()}
+async function pickField(gid,iid,field,val){closePicker();await dbUpdateItem(iid,{[field]:val});await loadAll();if(field==='status'){const g=groups.find(x=>x.id===gid);const it=(g&&g.items||[]).find(x=>x.id===iid);renameFolderOnStatusChange(g,it,null,val)}}
 
 let calCb=null,calMonth=null,calYear=null,calSelected=null,calMinDate=null,calRangeStart=null,calRangeEnd=null;
 function openCal(anchor,currentVal,callback,minDate,rangeStart,rangeEnd){closePicker();calCb=callback;calMinDate=minDate||null;calRangeStart=rangeStart||null;calRangeEnd=rangeEnd||null;const showDate=minDate||currentVal;const dt=new Date(showDate+'T00:00:00');calMonth=dt.getMonth();calYear=dt.getFullYear();calSelected=currentVal;const popup=document.getElementById('calPopup');if(window.innerWidth<=700){popup.style.top='50%';popup.style.left='50%';popup.style.transform='translate(-50%,-50%)'}else{const rect=anchor.getBoundingClientRect();let top=rect.bottom+6,left=rect.left;if(top+320>window.innerHeight)top=rect.top-320;if(left+280>window.innerWidth)left=window.innerWidth-290;if(left<8)left=8;popup.style.top=top+'px';popup.style.left=left+'px';popup.style.transform=''}document.getElementById('calBackdrop').style.display='block';renderCal();requestAnimationFrame(()=>popup.classList.add('open'))}
@@ -765,11 +765,11 @@ function mobileEditStatus(gid,iid){
 }
 async function mobilePickStatus(gid,iid,val){
   closePicker();
-  const g=groups.find(x=>x.id===gid);const it=(g&&g.items||[]).find(x=>x.id===iid);const prevStatus=it?it.status:null;
   await dbUpdateItem(iid,{status:val});
-  if(it)await renameFolderOnStatusChange(g,it,prevStatus,val);
   await loadAll();
-  const g2=groups.find(x=>x.id===gid);const it2=(g2&&g2.items||[]).find(x=>x.id===iid);if(it2)openMobileDetail(g2,it2,gid);
+  const g=groups.find(x=>x.id===gid);const it=(g&&g.items||[]).find(x=>x.id===iid);
+  if(it)openMobileDetail(g,it,gid);
+  renameFolderOnStatusChange(g,it,null,val);
 }
 
 function mobileEditType(gid,iid){
