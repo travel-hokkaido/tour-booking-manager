@@ -65,13 +65,15 @@ html,body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent}
 .stats{display:none}
 
 /* Toolbar */
-.toolbar{padding:10px 16px;gap:6px;margin-bottom:0;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:99}
+.toolbar{padding:10px 16px;gap:6px;margin-bottom:0;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:99;flex-wrap:wrap}
 .toolbar select{font-size:12px;padding:8px 10px;border-radius:8px;flex-shrink:0}
-.search-box{min-width:0;flex:1}
+.search-box{flex:1 1 60%;min-width:0}
 .search-box input{width:100%;font-size:14px;padding:8px 12px 8px 34px;border-radius:10px;background:var(--surface-alt);border:none}
 .search-box input:focus{background:var(--surface);border:1px solid var(--border)}
 .search-box svg{left:10px}
-.past-toggle{font-size:11px;padding:8px 10px;border-radius:8px}
+#statusFilter{flex:0 0 auto}
+#monthFilter,#sortOrder{flex:1 1 auto;min-width:0}
+.past-toggle{font-size:11px;padding:8px 10px;border-radius:8px;flex:0 0 auto}
 
 /* Groups */
 .group-list{gap:0;padding:0}
