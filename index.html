@@ -82,14 +82,17 @@ html,body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent}
 .group-info .group-name{font-size:16px;gap:6px}
 .group-meta{gap:6px 12px;font-size:11px;margin-top:4px;flex-wrap:wrap}
 .group-meta span{gap:3px}
-.group-tags{order:3;width:100%;margin-top:8px;gap:4px}
+.group-tags{order:3;width:100%;margin-top:8px;gap:4px;display:none}
+.group-card.open .group-tags{display:flex}
 .tag{font-size:10px;padding:3px 8px;border-radius:10px}
-.group-actions-area{width:100%;margin-left:0;margin-top:10px;gap:8px;justify-content:flex-start;flex-wrap:wrap}
-.group-actions-area .icon-btn{width:36px;height:36px;font-size:16px;background:var(--surface-alt);border-radius:8px}
-.group-actions-area .btn-sm{font-size:11px;padding:6px 12px;border-radius:8px}
-.group-actions-area .upload-btn{padding:6px 12px;font-size:11px;border-radius:8px}
-.group-actions-area .drive-btn{width:36px;height:36px;border-radius:8px}
-.group-actions-area .group-memo-btn{width:36px;height:36px;font-size:16px;border-radius:8px}
+.group-actions-area{position:absolute;right:14px;top:14px;margin-left:0;flex-direction:column;gap:6px;width:auto;justify-content:flex-start}
+.group-actions-area .icon-btn{width:32px;height:32px;font-size:14px;background:var(--surface-alt);border-radius:8px}
+.group-actions-area .btn-sm{font-size:10px;padding:4px 8px;border-radius:8px}
+.group-actions-area .upload-btn,.group-actions-area .drive-btn,.group-actions-area .group-memo-btn{display:none}
+.group-actions-area .group-edit-btn{width:32px;height:32px;font-size:14px;border-radius:8px}
+.group-header{position:relative;padding-right:50px}
+.group-field-edit{pointer-events:none}
+.group-edit-btn{width:32px;height:32px;font-size:14px;background:var(--surface-alt);border:none;border-radius:8px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
 
 /* Group body */
 .group-body{border-top:none;background:var(--surface-alt)}
@@ -259,7 +262,7 @@ return`<div class="group-card ${isOpen?'open':''} ${isPast?'past':''} ${gCancell
 <div class="group-name"><span class="group-field-edit" onclick="event.stopPropagation();inlineEditGroup(${g.id},'name',this)">${esc(g.name)}</span>${isPast?'<span class="past-label">Ended</span>':''}${gCancelled?'<span class="group-cancelled-label">Cancelled</span>':''}<div class="progress-bar" title="${pct}%"><div class="progress-fill confirmed" style="width:${pct}%"></div><div class="progress-fill pending" style="width:${total?Math.round(items.filter(i=>i.status==='pending').length/total*100):0}%"></div></div></div>
 <div class="group-meta"><span onclick="event.stopPropagation();inlineEditGroup(${g.id},'contact',this)" class="group-field-edit">👤 ${esc(g.contact||'')}</span><span onclick="event.stopPropagation();inlineEditGroup(${g.id},'phone',this)" class="group-field-edit">📞 ${esc(g.phone||'')}</span><span onclick="event.stopPropagation();inlineEditGroupDate(${g.id},'start_date',this)" class="group-field-edit">📅 ${fmtDate(g.start_date)}</span><span style="pointer-events:none">~</span><span onclick="event.stopPropagation();inlineEditGroupDate(${g.id},'end_date',this)" class="group-field-edit">${fmtDate(g.end_date)}</span><span onclick="event.stopPropagation();inlineEditGroup(${g.id},'pax',this,'number')" class="group-field-edit">👥 ${g.pax}</span><span>📋 ${confirmed}/${total} confirmed</span></div></div>
 <div class="group-tags">${Object.entries(tc).map(([tp,c])=>`<span class="tag tag-${tp}">${TL[tp]} ${c}</span>`).join('')}</div>
-<div class="group-actions-area" onclick="event.stopPropagation()">${g.drive_link?`<button class="drive-btn linked" onclick="window.open('${esc(g.drive_link)}','_blank')">${DSVG.linked}</button><button class="icon-btn" onclick="editDriveLink(${g.id})" style="font-size:11px">✎</button>`:`<button class="drive-btn unlinked" onclick="editDriveLink(${g.id})">${DSVG.unlinked}</button>`}<button class="group-memo-btn ${g.memo?'has-memo':''}" onclick="event.stopPropagation();openGroupMemo(${g.id},this)">📝</button><button class="upload-btn" onclick="event.stopPropagation();uploadForGroup(${g.id})" title="Upload to Drive">📤 Upload</button>${gCancelled?`<button class="btn btn-sm btn-secondary" onclick="restoreGroup(${g.id})" style="font-size:11px;padding:4px 10px">Undo Cancel</button>`:`<button class="btn btn-sm" onclick="cancelGroup(${g.id})" style="font-size:11px;padding:4px 10px;background:var(--status-cancelled-bg);color:var(--status-cancelled);border:none">Cancel All</button>`}<button class="icon-btn del" onclick="deleteGroup(${g.id})">✕</button></div></div>
+<div class="group-actions-area" onclick="event.stopPropagation()"><button class="group-edit-btn" onclick="openGroupEditModal(${g.id})" title="Edit group">✎</button>${g.drive_link?`<button class="drive-btn linked" onclick="window.open('${esc(g.drive_link)}','_blank')">${DSVG.linked}</button><button class="icon-btn" onclick="editDriveLink(${g.id})" style="font-size:11px">✎</button>`:`<button class="drive-btn unlinked" onclick="editDriveLink(${g.id})">${DSVG.unlinked}</button>`}<button class="group-memo-btn ${g.memo?'has-memo':''}" onclick="event.stopPropagation();openGroupMemo(${g.id},this)">📝</button><button class="upload-btn" onclick="event.stopPropagation();uploadForGroup(${g.id})" title="Upload to Drive">📤 Upload</button>${gCancelled?`<button class="btn btn-sm btn-secondary" onclick="restoreGroup(${g.id})" style="font-size:11px;padding:4px 10px">Undo Cancel</button>`:`<button class="btn btn-sm" onclick="cancelGroup(${g.id})" style="font-size:11px;padding:4px 10px;background:var(--status-cancelled-bg);color:var(--status-cancelled);border:none">Cancel All</button>`}<button class="icon-btn del" onclick="deleteGroup(${g.id})">✕</button></div></div>
 <div class="group-body"><div class="items-header"><span>Booking Items (${total})</span><button class="btn btn-sm btn-secondary" onclick="openItemModal(${g.id})"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> Add Booking</button></div>
 ${items.length?`<table class="item-table"><thead><tr><th>Type</th><th>Venue</th><th>Date</th><th>Pax</th><th>Price</th><th>Comm.</th><th>Status</th><th>Invoice</th><th>Upload</th><th>Memo</th><th></th></tr></thead><tbody>${items.map(i=>`<tr class="${i.status==='cancelled'?'row-cancelled':''}">
 <td class="cell-rel" onclick="event.stopPropagation();openTypePicker(event,${g.id},${i.id})"><span class="tag tag-${i.type}" style="cursor:pointer">${TL[i.type]} ▾</span></td>
@@ -773,6 +776,63 @@ function mobileEditMemo(gid,iid){
 }
 
 function closeMobileDetail(){document.getElementById('mobileDetailContainer').innerHTML=''}
+
+function openGroupEditModal(gid){
+  const g=groups.find(x=>x.id===gid);if(!g)return;
+  const c=document.getElementById('mobileDetailContainer');
+  c.innerHTML=`<div class="mobile-detail-overlay" onclick="if(event.target===this)closeGroupEditModal()">
+    <div class="mobile-detail-sheet">
+      <div class="mobile-detail-header">
+        <h3>Edit Group</h3>
+        <button class="mobile-detail-close" onclick="closeGroupEditModal()">✕</button>
+      </div>
+      <div class="mobile-detail-row" onclick="groupEditField(${gid},'name',this.querySelector('.mobile-detail-value'))"><span class="mobile-detail-label">Group Name</span><span class="mobile-detail-value">${esc(g.name)}</span></div>
+      <div class="mobile-detail-row" onclick="groupEditField(${gid},'contact',this.querySelector('.mobile-detail-value'))"><span class="mobile-detail-label">Lead Guest</span><span class="mobile-detail-value">${esc(g.contact||'—')}</span></div>
+      <div class="mobile-detail-row" onclick="groupEditField(${gid},'phone',this.querySelector('.mobile-detail-value'))"><span class="mobile-detail-label">Phone</span><span class="mobile-detail-value">${esc(g.phone||'—')}</span></div>
+      <div class="mobile-detail-row" onclick="groupEditDate(${gid},'start_date',this)"><span class="mobile-detail-label">Trip Start</span><span class="mobile-detail-value">${fmtDate(g.start_date)}</span></div>
+      <div class="mobile-detail-row" onclick="groupEditDate(${gid},'end_date',this)"><span class="mobile-detail-label">Trip End</span><span class="mobile-detail-value">${fmtDate(g.end_date)}</span></div>
+      <div class="mobile-detail-row" onclick="groupEditField(${gid},'pax',this.querySelector('.mobile-detail-value'),'number')"><span class="mobile-detail-label">Pax</span><span class="mobile-detail-value">${g.pax}</span></div>
+      <div class="mobile-detail-row" onclick="groupEditMemo(${gid})"><span class="mobile-detail-label">Memo</span><span class="mobile-detail-value" style="white-space:pre-wrap;text-align:left;max-width:100%">${esc(g.memo||'Tap to edit')}</span></div>
+      <div class="mobile-detail-actions">
+        <button class="btn btn-secondary" style="flex:1" onclick="closeGroupEditModal()">Close</button>
+      </div>
+    </div>
+  </div>`;
+}
+function closeGroupEditModal(){document.getElementById('mobileDetailContainer').innerHTML=''}
+
+function groupEditField(gid,field,el,type){
+  const g=groups.find(x=>x.id===gid);if(!g)return;
+  const val=g[field]||'';
+  const input=document.createElement('input');
+  input.type=type||'text';input.value=val;
+  input.style.cssText='font-size:16px;padding:8px 12px;border:1px solid var(--text-secondary);border-radius:8px;width:100%;outline:none;background:#fff;';
+  if(type==='number')input.min='1';
+  const orig=el.innerHTML;el.innerHTML='';el.appendChild(input);input.focus();input.select();
+  const commit=async()=>{let v=input.value.trim();if(type==='number')v=parseInt(v)||1;if(field==='name'&&!v){el.innerHTML=orig;return}await dbUpdateGroup(gid,{[field]:v});await loadAll();const gNew=groups.find(x=>x.id===gid);if(gNew)openGroupEditModal(gid)};
+  input.addEventListener('blur',commit);
+  input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();input.blur()}if(e.key==='Escape'){el.innerHTML=orig}});
+}
+
+function groupEditDate(gid,field,row){
+  const g=groups.find(x=>x.id===gid);if(!g)return;
+  const valEl=row.querySelector('.mobile-detail-value');
+  openCal(valEl,g[field]||todayStr(),async function(val){
+    await dbUpdateGroup(gid,{[field]:val});await loadAll();
+    const gNew=groups.find(x=>x.id===gid);if(gNew)openGroupEditModal(gid);
+  },field==='end_date'?g.start_date:null);
+}
+
+function groupEditMemo(gid){
+  const g=groups.find(x=>x.id===gid);if(!g)return;
+  memoGid=gid;memoIid=null;memoMode='group';
+  const popup=document.getElementById('memoPopup');
+  popup.style.cssText='position:fixed;z-index:1300;top:50%;left:50%;transform:translate(-50%,-50%);width:90vw;max-width:340px';
+  document.getElementById('memoTextarea').value=g.memo||'';
+  document.getElementById('memoBackdrop').style.display='block';
+  document.getElementById('memoBackdrop').style.zIndex='1299';
+  requestAnimationFrame(()=>{popup.classList.add('open');document.getElementById('memoTextarea').focus()});
+}
 </script>
 </body>
 </html>
