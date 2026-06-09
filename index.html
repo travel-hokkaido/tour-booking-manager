@@ -76,8 +76,9 @@ html,body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent}
 .group-list{gap:0;padding:0}
 .group-card{border-radius:0;border-left:none;border-right:none;border-top:none;box-shadow:none;overflow:visible}
 .group-card:hover{box-shadow:none}
-.group-header{padding:12px 14px;gap:10px;flex-direction:row;align-items:flex-start;flex-wrap:nowrap}
-.group-card.open .group-header{flex-wrap:wrap}
+.group-header{padding:12px 14px;gap:10px;flex-direction:row;align-items:flex-start;flex-wrap:nowrap;background:var(--surface)}
+.group-card.open .group-header{flex-wrap:wrap;background:var(--surface-alt)}
+.group-header:hover{background:var(--surface)}
 .group-expand{display:none}
 .group-info{min-width:0;width:100%}
 .group-info .group-name{font-size:16px;gap:6px}
