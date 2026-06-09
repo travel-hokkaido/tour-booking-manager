@@ -765,6 +765,7 @@ function openMobileDetail(g,it,gid){
 }
 
 function mobileEditField(gid,iid,field,el,type){
+  if(el.querySelector('input'))return;
   const g=groups.find(x=>x.id===gid);if(!g)return;
   const it=(g.items||[]).find(x=>x.id===iid);if(!it)return;
   const val=it[field]||'';
@@ -772,6 +773,8 @@ function mobileEditField(gid,iid,field,el,type){
   input.type=type||'text';input.value=val;
   input.style.cssText='font-size:16px;padding:8px 12px;border:1px solid var(--text-secondary);border-radius:8px;width:100%;outline:none;background:#fff;';
   if(type==='number')input.min='0';
+  input.addEventListener('click',e=>{e.stopPropagation()});
+  input.addEventListener('touchstart',e=>{e.stopPropagation()});
   const orig=el.innerHTML;el.innerHTML='';el.appendChild(input);
   requestAnimationFrame(()=>{input.focus()});
   let committed=false;
@@ -866,12 +869,15 @@ function openGroupEditModal(gid){
 function closeGroupEditModal(){document.getElementById('mobileDetailContainer').innerHTML=''}
 
 function groupEditField(gid,field,el,type){
+  if(el.querySelector('input'))return;
   const g=groups.find(x=>x.id===gid);if(!g)return;
   const val=g[field]||'';
   const input=document.createElement('input');
   input.type=type||'text';input.value=val;
   input.style.cssText='font-size:16px;padding:8px 12px;border:1px solid var(--text-secondary);border-radius:8px;width:100%;outline:none;background:#fff;';
   if(type==='number')input.min='1';
+  input.addEventListener('click',e=>{e.stopPropagation()});
+  input.addEventListener('touchstart',e=>{e.stopPropagation()});
   const orig=el.innerHTML;el.innerHTML='';el.appendChild(input);
   requestAnimationFrame(()=>{input.focus()});
   let committed=false;
