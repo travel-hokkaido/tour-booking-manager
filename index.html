@@ -315,14 +315,22 @@ function closePicker(){document.getElementById('floatingPicker').classList.remov
 function openStatusPicker(ev,gid,iid){
   const fp=document.getElementById('floatingPicker');
   fp.innerHTML=STATUS_KEYS.map(s=>`<button class="${s}" onclick="event.stopPropagation();pickField(${gid},${iid},'status','${s}')"><span class="status-dot dot-${s}"></span>${SL[s]}</button>`).join('');
-  if(window.innerWidth<=700){fp.style.cssText='position:fixed;z-index:1300;top:50%;left:50%;transform:translate(-50%,-50%)'}else{const rect=ev.currentTarget.getBoundingClientRect();fp.style.top=(rect.bottom+4)+'px';fp.style.left=rect.left+'px';fp.style.transform=''}
+  const rect=ev.currentTarget.getBoundingClientRect();
+  let top=rect.bottom+4,left=rect.left;
+  if(left+140>window.innerWidth)left=window.innerWidth-150;
+  if(left<8)left=8;
+  fp.style.top=top+'px';fp.style.left=left+'px';fp.style.transform='';
   document.getElementById('pickerBackdrop').style.display='block';
   fp.classList.add('open');
 }
 function openTypePicker(ev,gid,iid){
   const fp=document.getElementById('floatingPicker');
   fp.innerHTML=TYPE_KEYS.map(tp=>`<button onclick="event.stopPropagation();pickField(${gid},${iid},'type','${tp}')"><span class="tag tag-${tp}">${TL[tp]}</span></button>`).join('');
-  if(window.innerWidth<=700){fp.style.cssText='position:fixed;z-index:1300;top:50%;left:50%;transform:translate(-50%,-50%)'}else{const rect=ev.currentTarget.getBoundingClientRect();fp.style.top=(rect.bottom+4)+'px';fp.style.left=rect.left+'px';fp.style.transform=''}
+  const rect=ev.currentTarget.getBoundingClientRect();
+  let top=rect.bottom+4,left=rect.left;
+  if(left+140>window.innerWidth)left=window.innerWidth-150;
+  if(left<8)left=8;
+  fp.style.top=top+'px';fp.style.left=left+'px';fp.style.transform='';
   document.getElementById('pickerBackdrop').style.display='block';
   fp.classList.add('open');
 }
@@ -353,8 +361,23 @@ async function editInvoiceLink(gid,iid){const g=groups.find(x=>x.id===gid);if(!g
 
 function togglePast(){showPast=!showPast;render()}
 function toggleGroup(gid){if(openGroups.has(gid))openGroups.delete(gid);else openGroups.add(gid);render()}
-async function cancelGroup(gid){await dbUpdateAllItems(gid,{status:'cancelled'});await loadAll()}
-async function restoreGroup(gid){await dbUpdateAllItems(gid,{status:'pending'});await loadAll()}
+async function cancelGroup(gid){
+  const g=groups.find(x=>x.id===gid);if(!g)return;
+  for(const it of(g.items||[])){
+    if(it.status!=='cancelled'){
+      await db.from('items').update({prev_status:it.status,status:'cancelled'}).eq('id',it.id);
+    }
+  }
+  await loadAll();
+}
+async function restoreGroup(gid){
+  const g=groups.find(x=>x.id===gid);if(!g)return;
+  for(const it of(g.items||[])){
+    const restore=it.prev_status||'pending';
+    await db.from('items').update({status:restore,prev_status:null}).eq('id',it.id);
+  }
+  await loadAll();
+}
 async function deleteGroup(gid){const g=groups.find(x=>x.id===gid);if(!g)return;if(!await customConfirm(`Delete "${g.name}" and all bookings?`))return;await dbDeleteGroup(gid);openGroups.delete(gid);await loadAll()}
 
 function openGroupModal(){document.getElementById('groupModalTitle').textContent='Add New Group';document.getElementById('groupModalBody').innerHTML=`<div class="form-row full"><div class="fg"><label>Group Name</label><input type="text" id="gName" placeholder="e.g. Jeju 3N4D Family Trip"></div></div><div class="form-row"><div class="fg"><label>Lead Guest Name</label><input type="text" id="gContact" placeholder="John Doe"></div><div class="fg"><label>Phone</label><input type="text" id="gPhone" placeholder="010-0000-0000"></div></div><div class="form-row tri"><div class="fg"><label>Trip Start</label><input type="text" id="gStart" value="${fmtDate(todayStr())}" data-val="${todayStr()}" readonly onclick="openModalCal(this,'gStart')" style="cursor:pointer"></div><div class="fg"><label>Trip End</label><input type="text" id="gEnd" value="${fmtDate(todayStr())}" data-val="${todayStr()}" readonly onclick="openModalCal(this,'gEnd')" style="cursor:pointer"></div><div class="fg"><label>Pax</label><input type="number" id="gPax" min="1" value="2" style="width:100%"></div></div><div class="form-row full"><div class="fg"><label>Memo</label><textarea id="gMemo" placeholder="Group-wide notes"></textarea></div></div><div class="modal-foot"><button class="btn btn-secondary" onclick="closeGroupModal()">Cancel</button><button class="btn btn-primary" onclick="saveGroup()">Save</button></div>`;document.getElementById('groupModalOverlay').classList.add('active')}
