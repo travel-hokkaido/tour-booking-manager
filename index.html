@@ -229,7 +229,7 @@ const TL={hotel:'Hotel',activity:'Activity',restaurant:'Restaurant',transport:'T
 const SL={confirmed:'Confirmed',pending:'Pending',cancelled:'Cancelled'};
 const TYPE_KEYS=Object.keys(TL),STATUS_KEYS=Object.keys(SL);
 const SITE_PASSWORD='Hokkaido2025@';
-const DSVG={linked:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4.433 22l-3.4-5.89L9.033 2h6.8L4.433 22z" fill="#4285F4"/><path d="M20.967 22H7.567l3.4-5.89h13.4L20.967 22z" fill="#34A853"/><path d="M1.033 16.11L4.433 22l7.534-13.04L8.567 2 1.033 16.11z" fill="#FBBC04"/></svg>',unlinked:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4.433 22l-3.4-5.89L9.033 2h6.8L4.433 22z" fill="currentColor" opacity=".4"/><path d="M20.967 22H7.567l3.4-5.89h13.4L20.967 22z" fill="currentColor" opacity=".3"/><path d="M1.033 16.11L4.433 22l7.534-13.04L8.567 2 1.033 16.11z" fill="currentColor" opacity=".5"/></svg>'};
+const DSVG={linked:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z" stroke="#2D6A4F" stroke-width="2" fill="#D8F3DC"/></svg>',unlinked:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z" stroke="currentColor" stroke-width="2" opacity=".5"/></svg>'};
 const ISVG='<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="currentColor" stroke-width="2"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" stroke="currentColor" stroke-width="2"/></svg>';
 let db=null,groups=[],openGroups=new Set(),showPast=false;
 function todayStr(){return new Date().toISOString().split('T')[0]}
