@@ -792,7 +792,12 @@ function openGroupEditModal(gid){
       <div class="mobile-detail-row" onclick="groupEditDate(${gid},'end_date',this)"><span class="mobile-detail-label">Trip End</span><span class="mobile-detail-value">${fmtDate(g.end_date)}</span></div>
       <div class="mobile-detail-row" onclick="groupEditField(${gid},'pax',this.querySelector('.mobile-detail-value'),'number')"><span class="mobile-detail-label">Pax</span><span class="mobile-detail-value">${g.pax}</span></div>
       <div class="mobile-detail-row" onclick="groupEditMemo(${gid})"><span class="mobile-detail-label">Memo</span><span class="mobile-detail-value" style="white-space:pre-wrap;text-align:left;max-width:100%">${esc(g.memo||'Tap to edit')}</span></div>
+      <div class="mobile-detail-row"><span class="mobile-detail-label">Drive</span><span class="mobile-detail-value">${g.drive_link?`<a href="${esc(g.drive_link)}" target="_blank" style="color:var(--accent-hotel);pointer-events:auto">Open folder</a>`:'—'}</span></div>
       <div class="mobile-detail-actions">
+        <button class="btn btn-secondary" style="flex:1" onclick="closeGroupEditModal();editDriveLink(${gid})">📁 Drive Link</button>
+        <button class="btn btn-primary" style="flex:1" onclick="closeGroupEditModal();uploadForGroup(${gid})">📤 Upload</button>
+      </div>
+      <div class="mobile-detail-actions" style="border-top:none;padding-top:0">
         <button class="btn btn-secondary" style="flex:1" onclick="closeGroupEditModal()">Close</button>
       </div>
     </div>
