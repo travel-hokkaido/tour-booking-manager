@@ -769,7 +769,8 @@ function mobileEditField(gid,iid,field,el,type){
   input.type=type||'text';input.value=val;
   input.style.cssText='font-size:16px;padding:8px 12px;border:1px solid var(--text-secondary);border-radius:8px;width:100%;outline:none;background:#fff;';
   if(type==='number')input.min='0';
-  const orig=el.innerHTML;el.innerHTML='';el.appendChild(input);input.focus();input.select();
+  const orig=el.innerHTML;el.innerHTML='';el.appendChild(input);
+  setTimeout(()=>{input.focus();input.setSelectionRange(input.value.length,input.value.length)},50);
   let committed=false;
   const commit=async()=>{if(committed)return;committed=true;let v=input.value.trim();if(type==='number')v=parseInt(v)||0;if(field==='venue'&&!v){el.innerHTML=orig;return}await dbUpdateItem(iid,{[field]:v});await loadAll();const gNew=groups.find(x=>x.id===gid);const itNew=(gNew.items||[]).find(x=>x.id===iid);if(itNew)openMobileDetail(gNew,itNew,gid)};
   let composing=false;
@@ -868,7 +869,8 @@ function groupEditField(gid,field,el,type){
   input.type=type||'text';input.value=val;
   input.style.cssText='font-size:16px;padding:8px 12px;border:1px solid var(--text-secondary);border-radius:8px;width:100%;outline:none;background:#fff;';
   if(type==='number')input.min='1';
-  const orig=el.innerHTML;el.innerHTML='';el.appendChild(input);input.focus();input.select();
+  const orig=el.innerHTML;el.innerHTML='';el.appendChild(input);
+  setTimeout(()=>{input.focus();input.setSelectionRange(input.value.length,input.value.length)},50);
   let committed=false;
   const commit=async()=>{if(committed)return;committed=true;let v=input.value.trim();if(type==='number')v=parseInt(v)||1;if(field==='name'&&!v){el.innerHTML=orig;return}await dbUpdateGroup(gid,{[field]:v});await loadAll();const gNew=groups.find(x=>x.id===gid);if(gNew)openGroupEditModal(gid)};
   let composing=false;
