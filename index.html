@@ -719,7 +719,7 @@ function mobileEditField(gid,iid,field,el,type){
   input.style.cssText='font-size:16px;padding:8px 12px;border:1px solid var(--text-secondary);border-radius:8px;width:100%;outline:none;background:#fff;';
   if(type==='number')input.min='0';
   const orig=el.innerHTML;el.innerHTML='';el.appendChild(input);input.focus();input.select();
-  const commit=async()=>{let v=input.value.trim();if(type==='number')v=parseInt(v)||0;if(field==='venue'&&!v){el.innerHTML=orig;return}await dbUpdateItem(iid,{[field]:v});closeMobileDetail();await loadAll();const gNew=groups.find(x=>x.id===gid);const itNew=(gNew.items||[]).find(x=>x.id===iid);if(itNew)openMobileDetail(gNew,itNew,gid)};
+  const commit=async()=>{let v=input.value.trim();if(type==='number')v=parseInt(v)||0;if(field==='venue'&&!v){el.innerHTML=orig;return}await dbUpdateItem(iid,{[field]:v});await loadAll();const gNew=groups.find(x=>x.id===gid);const itNew=(gNew.items||[]).find(x=>x.id===iid);if(itNew)openMobileDetail(gNew,itNew,gid)};
   input.addEventListener('blur',commit);
   input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();input.blur()}if(e.key==='Escape'){el.innerHTML=orig}});
 }
@@ -729,40 +729,47 @@ function mobileEditDate(gid,iid,field,row){
   const it=(g.items||[]).find(x=>x.id===iid);if(!it)return;
   const valEl=row.querySelector('.mobile-detail-value');
   openCal(valEl,it[field]||todayStr(),async function(val){
-    await dbUpdateItem(iid,{[field]:val});closeMobileDetail();await loadAll();
+    await dbUpdateItem(iid,{[field]:val});await loadAll();
     const gNew=groups.find(x=>x.id===gid);const itNew=(gNew.items||[]).find(x=>x.id===iid);if(itNew)openMobileDetail(gNew,itNew,gid);
   },field==='end_date'?it.start_date:null,g.start_date,g.end_date);
 }
 
 function mobileEditStatus(gid,iid){
-  closeMobileDetail();
-  setTimeout(()=>{
-    const fakeEvent={currentTarget:document.body,stopPropagation:()=>{}};
-    openStatusPicker(fakeEvent,gid,iid);
-  },100);
+  const fp=document.getElementById('floatingPicker');
+  fp.style.cssText='position:fixed;z-index:1300;top:50%;left:50%;transform:translate(-50%,-50%)';
+  fp.innerHTML=STATUS_KEYS.map(s=>`<button class="${s}" onclick="event.stopPropagation();mobilePickStatus(${gid},${iid},'${s}')"><span class="status-dot dot-${s}"></span>${SL[s]}</button>`).join('');
+  document.getElementById('pickerBackdrop').style.display='block';
+  fp.classList.add('open');
+}
+async function mobilePickStatus(gid,iid,val){
+  closePicker();
+  await dbUpdateItem(iid,{status:val});await loadAll();
+  const g=groups.find(x=>x.id===gid);const it=(g.items||[]).find(x=>x.id===iid);if(it)openMobileDetail(g,it,gid);
 }
 
 function mobileEditType(gid,iid){
-  closeMobileDetail();
-  setTimeout(()=>{
-    const fakeEvent={currentTarget:document.body,stopPropagation:()=>{}};
-    openTypePicker(fakeEvent,gid,iid);
-  },100);
+  const fp=document.getElementById('floatingPicker');
+  fp.style.cssText='position:fixed;z-index:1300;top:50%;left:50%;transform:translate(-50%,-50%)';
+  fp.innerHTML=TYPE_KEYS.map(tp=>`<button onclick="event.stopPropagation();mobilePickType(${gid},${iid},'${tp}')"><span class="tag tag-${tp}">${TL[tp]}</span></button>`).join('');
+  document.getElementById('pickerBackdrop').style.display='block';
+  fp.classList.add('open');
+}
+async function mobilePickType(gid,iid,val){
+  closePicker();
+  await dbUpdateItem(iid,{type:val});await loadAll();
+  const g=groups.find(x=>x.id===gid);const it=(g.items||[]).find(x=>x.id===iid);if(it)openMobileDetail(g,it,gid);
 }
 
 function mobileEditMemo(gid,iid){
   const g=groups.find(x=>x.id===gid);if(!g)return;
   const it=(g.items||[]).find(x=>x.id===iid);if(!it)return;
-  closeMobileDetail();
-  setTimeout(()=>{
-    const anchor=document.body;
-    memoGid=gid;memoIid=iid;memoMode='item';
-    const popup=document.getElementById('memoPopup');
-    popup.style.top='50%';popup.style.left='50%';popup.style.transform='translate(-50%,-50%)';
-    document.getElementById('memoTextarea').value=it.memo||'';
-    document.getElementById('memoBackdrop').style.display='block';
-    requestAnimationFrame(()=>{popup.classList.add('open');document.getElementById('memoTextarea').focus()});
-  },100);
+  memoGid=gid;memoIid=iid;memoMode='item';
+  const popup=document.getElementById('memoPopup');
+  popup.style.cssText='position:fixed;z-index:1300;top:50%;left:50%;transform:translate(-50%,-50%);width:90vw;max-width:340px';
+  document.getElementById('memoTextarea').value=it.memo||'';
+  document.getElementById('memoBackdrop').style.display='block';
+  document.getElementById('memoBackdrop').style.zIndex='1299';
+  requestAnimationFrame(()=>{popup.classList.add('open');document.getElementById('memoTextarea').focus()});
 }
 
 function closeMobileDetail(){document.getElementById('mobileDetailContainer').innerHTML=''}
