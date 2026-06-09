@@ -97,53 +97,37 @@ html,body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent}
 .items-header span{font-size:11px}
 .items-header .btn{font-size:12px;padding:8px 14px}
 
-/* Item cards - accordion */
+/* Item cards - summary only */
 .item-table{display:block;width:100%}
 .item-table thead{display:none}
-.item-table tbody{display:flex;flex-direction:column;gap:0;padding:0}
+.item-table tbody{display:flex;flex-direction:column;gap:0;padding:8px 16px}
 .item-table tbody tr{
-  display:flex;flex-direction:column;gap:0;
-  padding:0;margin:0 16px 10px;
-  border:1px solid var(--border);border-radius:14px;
-  background:var(--surface);overflow:hidden;cursor:pointer;
+  display:flex;align-items:center;gap:10px;
+  padding:12px 14px;margin:0 0 8px;
+  border:1px solid var(--border);border-radius:12px;
+  background:var(--surface);cursor:pointer;
 }
 .item-table tbody tr.row-cancelled{background:var(--status-cancelled-bg);border-color:rgba(193,56,46,.2)}
-.item-table td{display:flex;padding:10px 14px;border:none;border-bottom:1px solid var(--border-light);font-size:14px;align-items:center;gap:8px;min-height:44px}
-.item-table td:last-child{border-bottom:none}
+/* Only show type, venue, date */
+.item-table td{display:none;padding:0;border:none;font-size:14px;align-items:center;gap:6px}
+.item-table td:nth-child(1){display:flex}
+.item-table td:nth-child(2){display:flex;flex:1;font-weight:600;font-size:14px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item-table td:nth-child(3){display:flex;font-size:11px;color:var(--text-secondary);white-space:nowrap}
+.item-table td:nth-child(7){display:flex;margin-left:auto}
 
-/* Visible: Type, Venue, Date (1,2,3) */
-.item-table td:nth-child(1){background:var(--surface-alt);padding:8px 14px;min-height:auto}
-.item-table td:nth-child(2){font-weight:600;font-size:15px}
-.item-table td:nth-child(3){font-size:13px;color:var(--text-secondary);border-bottom:none}
-
-/* Hidden by default: 4-11 */
-.item-table td:nth-child(n+4){display:none}
-
-/* Show when expanded */
-.item-table tbody tr.expanded td:nth-child(n+4){display:flex}
-.item-table tbody tr.expanded td:nth-child(3){border-bottom:1px solid var(--border-light)}
-
-/* Pax */
-.item-table tbody tr.expanded td:nth-child(4):before{content:'Pax: ';font-size:11px;color:var(--text-muted);font-weight:600}
-/* Price */
-.item-table tbody tr.expanded td:nth-child(5):before{content:'Price: ';font-size:11px;color:var(--text-muted);font-weight:600}
-/* Commission */
-.item-table tbody tr.expanded td:nth-child(6):before{content:'Comm: ';font-size:11px;color:var(--text-muted);font-weight:600}
-/* Status */
-.item-table tbody tr.expanded td:nth-child(7){background:var(--surface-alt);padding:10px 14px}
-/* Invoice */
-.item-table tbody tr.expanded td:nth-child(8){justify-content:flex-start;gap:10px}
-.item-table tbody tr.expanded td:nth-child(8):before{content:'Invoice: ';font-size:11px;color:var(--text-muted);font-weight:600}
-/* Upload */
-.item-table tbody tr.expanded td:nth-child(9){justify-content:flex-start;gap:10px}
-.item-table tbody tr.expanded td:nth-child(9):before{content:'Files: ';font-size:11px;color:var(--text-muted);font-weight:600}
-/* Memo */
-.item-table tbody tr.expanded td:nth-child(10):before{content:'Memo: ';font-size:11px;color:var(--text-muted);font-weight:600}
-.item-table tbody tr.expanded td:nth-child(10) .memo-cell{max-width:none;white-space:normal}
-/* Delete */
-.item-table tbody tr.expanded td:nth-child(11){justify-content:center;background:var(--surface-alt);padding:8px}
-.item-table td:nth-child(11) .icon-btn{width:100%;height:36px;border-radius:8px;font-size:13px;color:var(--status-cancelled)}
-.item-table td:nth-child(11) .icon-btn:before{content:'Delete '}
+/* Mobile item detail modal */
+.mobile-detail-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(26,22,18,.4);backdrop-filter:blur(4px);z-index:1200;display:flex;align-items:flex-end;justify-content:center}
+.mobile-detail-sheet{background:var(--surface);border-radius:20px 20px 0 0;width:100%;max-height:85vh;overflow-y:auto;padding:20px 20px 30px;animation:slideUp .2s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.mobile-detail-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.mobile-detail-header h3{font-size:17px;font-weight:700}
+.mobile-detail-close{width:36px;height:36px;border:none;background:var(--surface-alt);border-radius:10px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-secondary)}
+.mobile-detail-row{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--border-light);font-size:14px}
+.mobile-detail-row:last-child{border-bottom:none}
+.mobile-detail-label{font-size:12px;color:var(--text-muted);font-weight:600}
+.mobile-detail-value{font-weight:500;text-align:right;max-width:60%}
+.mobile-detail-actions{display:flex;gap:10px;margin-top:16px;padding-top:16px;border-top:1px solid var(--border)}
+.mobile-detail-actions .btn{flex:1;padding:14px;font-size:14px;border-radius:12px;justify-content:center}
 
 /* Editable touch targets */
 .editable{font-size:14px;padding:8px 10px;margin:-8px -10px;min-height:36px;display:inline-flex;align-items:center;border-radius:8px}
@@ -220,6 +204,7 @@ html,body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent}
 <div class="cal-backdrop" id="calBackdrop" style="display:none" onclick="closeCal()"></div><div class="cal-popup" id="calPopup"><div class="cal-popup-header"><button onclick="calNav(-1)">◀</button><span class="cal-title" id="calTitle"></span><button onclick="calNav(1)">▶</button></div><div class="cal-grid" id="calGrid"></div></div>
 <div class="cal-backdrop" id="memoBackdrop" style="display:none" onclick="closeMemoPopup()"></div><div class="memo-popup" id="memoPopup"><div class="memo-popup-head"><span>Memo</span><button class="modal-x" onclick="closeMemoPopup()" style="width:24px;height:24px;font-size:13px">✕</button></div><textarea id="memoTextarea"></textarea><div class="memo-popup-foot"><button class="btn btn-sm btn-primary" onclick="saveMemoPopup()">Save</button></div></div>
 <div id="confirmContainer"></div>
+<div id="mobileDetailContainer"></div>
 <div id="promptContainer"></div>
 <div class="cal-backdrop" id="pickerBackdrop" style="display:none" onclick="closePicker()"></div>
 <div class="cell-dropdown" id="floatingPicker" style="position:fixed;z-index:1100"></div>
@@ -673,14 +658,52 @@ function uploadForGroup(gid){
 initApp();
 window.addEventListener('load',()=>{try{initGoogleDrive()}catch(e){console.warn('Google Drive init:',e)}});
 
-/* Mobile accordion toggle */
+/* Mobile detail modal */
 document.addEventListener('click',e=>{
   if(window.innerWidth>700)return;
   const tr=e.target.closest('.item-table tbody tr');
   if(!tr)return;
-  if(e.target.closest('button,a,select,.editable,.inline-input,.cell-rel,.upload-btn,.invoice-add,.invoice-link,.icon-btn,.status-text,.tag,.drop-zone'))return;
-  tr.classList.toggle('expanded');
+  if(e.target.closest('button,a,select,.inline-input'))return;
+  const gid=parseInt(tr.closest('[data-gid]').dataset.gid);
+  const tds=tr.querySelectorAll('td');
+  if(tds.length<4)return;
+  const g=groups.find(x=>x.id===gid);if(!g)return;
+  const idx=Array.from(tr.parentNode.children).indexOf(tr);
+  const it=(g.items||[])[idx];if(!it)return;
+  openMobileDetail(g,it,gid);
 });
+
+function openMobileDetail(g,it,gid){
+  const TLoc=TL,SLoc=SL;
+  const c=document.getElementById('mobileDetailContainer');
+  c.innerHTML=`<div class="mobile-detail-overlay" onclick="if(event.target===this)closeMobileDetail()">
+    <div class="mobile-detail-sheet">
+      <div class="mobile-detail-header">
+        <h3>${esc(it.venue)}</h3>
+        <button class="mobile-detail-close" onclick="closeMobileDetail()">✕</button>
+      </div>
+      <div class="mobile-detail-row"><span class="mobile-detail-label">Type</span><span class="mobile-detail-value"><span class="tag tag-${it.type}">${TLoc[it.type]}</span></span></div>
+      <div class="mobile-detail-row"><span class="mobile-detail-label">Date</span><span class="mobile-detail-value">${fmtDate(it.start_date)}${it.start_date!==it.end_date?' ~ '+fmtDate(it.end_date):''}${it.time?' · '+esc(it.time):''}</span></div>
+      <div class="mobile-detail-row"><span class="mobile-detail-label">Pax</span><span class="mobile-detail-value">${it.pax}</span></div>
+      <div class="mobile-detail-row"><span class="mobile-detail-label">Price</span><span class="mobile-detail-value">${esc(it.price||'-')}</span></div>
+      <div class="mobile-detail-row"><span class="mobile-detail-label">Commission</span><span class="mobile-detail-value">${esc(it.commission||'-')}</span></div>
+      <div class="mobile-detail-row"><span class="mobile-detail-label">Status</span><span class="mobile-detail-value"><span class="status-text ${it.status}"><span class="status-dot dot-${it.status}"></span>${SLoc[it.status]}</span></span></div>
+      ${it.room_type?`<div class="mobile-detail-row"><span class="mobile-detail-label">Room</span><span class="mobile-detail-value">${esc(it.room_type)} × ${it.room_count||0}</span></div>`:''}
+      <div class="mobile-detail-row"><span class="mobile-detail-label">Invoice</span><span class="mobile-detail-value">${it.invoice_link?`<a href="${esc(it.invoice_link)}" target="_blank" style="color:var(--accent-hotel)">Open file</a>`:'—'}</span></div>
+      <div class="mobile-detail-row"><span class="mobile-detail-label">Upload</span><span class="mobile-detail-value">${it.upload_folder_link?`<a href="${esc(it.upload_folder_link)}" target="_blank" style="color:var(--accent-hotel)">Open folder</a>`:'—'}</span></div>
+      <div class="mobile-detail-row"><span class="mobile-detail-label">Memo</span><span class="mobile-detail-value" style="white-space:pre-wrap;text-align:left;max-width:100%">${esc(it.memo||'—')}</span></div>
+      <div class="mobile-detail-actions">
+        <button class="btn btn-secondary" onclick="closeMobileDetail();openStatusPicker(event,${gid},${it.id})">Change Status</button>
+        <button class="btn btn-primary" onclick="closeMobileDetail();uploadForItem(${gid},${it.id})">📤 Upload</button>
+      </div>
+      <div class="mobile-detail-actions" style="border-top:none;padding-top:0">
+        <button class="btn btn-secondary" onclick="closeMobileDetail();uploadInvoice(${gid},${it.id})">📄 Invoice</button>
+        <button class="btn" style="flex:1;padding:14px;font-size:14px;border-radius:12px;background:var(--status-cancelled-bg);color:var(--status-cancelled);border:none;justify-content:center;cursor:pointer" onclick="closeMobileDetail();deleteItem(${gid},${it.id})">Delete</button>
+      </div>
+    </div>
+  </div>`;
+}
+function closeMobileDetail(){document.getElementById('mobileDetailContainer').innerHTML=''}
 </script>
 </body>
 </html>
