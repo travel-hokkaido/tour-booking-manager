@@ -1,5 +1,5 @@
 const { google } = require('googleapis');
-const { formidable } = require('formidable');
+const formidable = require('formidable');
 const fs = require('fs');
 
 const SCOPES = ['https://www.googleapis.com/auth/drive'];
@@ -47,22 +47,30 @@ async function getOrCreateFolder(drive, name, parentId) {
   return id;
 }
 
+function parseForm(req) {
+  return new Promise((resolve, reject) => {
+    const form = new formidable.IncomingForm({ multiples: true, maxFileSize: 50 * 1024 * 1024 });
+    form.parse(req, (err, fields, files) => {
+      if (err) reject(err);
+      else resolve({ fields, files });
+    });
+  });
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
-    const form = formidable({ multiples: true, maxFileSize: 50 * 1024 * 1024 });
-    const [fields, files] = await form.parse(req);
+    const { fields, files } = await parseForm(req);
 
-    const parentFolderId = fields.parentFolderId ? fields.parentFolderId[0] : null;
-    const folderPath = fields.folderPath ? JSON.parse(fields.folderPath[0]) : [];
+    const parentFolderId = fields.parentFolderId || null;
+    const folderPath = fields.folderPath ? JSON.parse(fields.folderPath) : [];
 
     const auth = getAuth();
     const drive = google.drive({ version: 'v3', auth });
 
-    // Create nested folders
     let currentParent = parentFolderId || null;
     for (const folderName of folderPath) {
       currentParent = await getOrCreateFolder(drive, folderName, currentParent);
@@ -70,17 +78,16 @@ module.exports = async function handler(req, res) {
 
     const folderLink = currentParent ? `https://drive.google.com/drive/folders/${currentParent}` : null;
 
-    // Upload files
     const uploadedFiles = [];
     const fileList = files.file ? (Array.isArray(files.file) ? files.file : [files.file]) : [];
 
     for (const file of fileList) {
-      const fileMetadata = { name: file.originalFilename || file.newFilename };
+      const fileMetadata = { name: file.originalFilename || file.newFilename || file.name };
       if (currentParent) fileMetadata.parents = [currentParent];
 
       const media = {
-        mimeType: file.mimetype,
-        body: fs.createReadStream(file.filepath),
+        mimeType: file.mimetype || file.type,
+        body: fs.createReadStream(file.filepath || file.path),
       };
 
       const uploaded = await drive.files.create({
@@ -96,8 +103,7 @@ module.exports = async function handler(req, res) {
         link: `https://drive.google.com/file/d/${uploaded.data.id}/view`,
       });
 
-      // Clean up temp file
-      fs.unlinkSync(file.filepath);
+      fs.unlinkSync(file.filepath || file.path);
     }
 
     return res.status(200).json({
