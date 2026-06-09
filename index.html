@@ -257,15 +257,16 @@ async function checkDriveLinks(){
   if(!fileIds.length)return;
   try{
     const res=await fetch('/api/check',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fileIds})});
-    if(!res.ok)return;
-    const{results}=await res.json();
+    if(!res.ok){console.warn('Check API error:',res.status);return}
+    const data=await res.json();
+    const results=data.results||{};
     let changed=false;
     for(const[fid,valid]of Object.entries(results)){
       if(!valid&&linkMap[fid]){
         const info=linkMap[fid];
-        if(info.type==='group'){await db.from('groups').update({drive_link:''}).eq('id',info.id);changed=true}
-        else if(info.type==='upload'){await db.from('items').update({upload_folder_link:''}).eq('id',info.id);changed=true}
-        else if(info.type==='invoice'){await db.from('items').update({invoice_link:''}).eq('id',info.id);changed=true}
+        if(info.type==='group'){await db.from('groups').update({drive_link:null}).eq('id',info.id);changed=true}
+        else if(info.type==='upload'){await db.from('items').update({upload_folder_link:null}).eq('id',info.id);changed=true}
+        else if(info.type==='invoice'){await db.from('items').update({invoice_link:null}).eq('id',info.id);changed=true}
       }
     }
     if(changed)await loadAll();
