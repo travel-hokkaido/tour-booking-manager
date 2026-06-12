@@ -717,44 +717,6 @@ async function deleteDriveFolder(g){
   }catch(e){console.warn('Drive folder delete failed:',e)}
 }
 
-async function importBooking(data){
-  if(!db){console.error('DB not connected');return}
-  const group={
-    name:data.name||'Imported Group',
-    contact:data.contact||'',
-    phone:data.phone||'',
-    start_date:data.start_date||todayStr(),
-    end_date:data.end_date||data.start_date||todayStr(),
-    pax:data.pax||1,
-    memo:data.memo||''
-  };
-  const{data:g,error:ge}=await db.from('groups').insert(group).select().single();
-  if(ge){console.error('Group insert failed:',ge);return}
-  const items=data.items||[];
-  for(const it of items){
-    const item={
-      group_id:g.id,
-      type:it.type||'etc',
-      status:it.status||'pending',
-      venue:it.venue||'',
-      start_date:it.start_date||group.start_date,
-      end_date:it.end_date||it.start_date||group.start_date,
-      pax:it.pax||group.pax,
-      price:it.price||'',
-      commission:it.commission||'',
-      memo:it.memo||'',
-      time:it.time||'',
-      room_type:it.room_type||'',
-      room_count:it.room_count||0
-    };
-    const{error:ie}=await db.from('items').insert(item);
-    if(ie)console.error('Item insert failed:',ie);
-  }
-  await loadAll();
-  console.log('Import complete: '+group.name+' ('+items.length+' items)');
-}
-window.importBooking=importBooking;
-
 initApp();
 
 /* Mobile detail modal */
