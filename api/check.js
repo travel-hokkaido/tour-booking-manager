@@ -38,7 +38,11 @@ module.exports = async function handler(req, res) {
         });
         results[id] = !file.data.trashed;
       } catch (e) {
-        results[id] = false;
+        if (e.code === 404) {
+          results[id] = false;
+        } else {
+          results[id] = true;
+        }
       }
     }
 
