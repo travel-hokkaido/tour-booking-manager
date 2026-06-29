@@ -72,11 +72,14 @@ module.exports = async function handler(req, res) {
     const drive = google.drive({ version: 'v3', auth });
 
     let currentParent = parentFolderId || null;
+    let firstFolderId = null;
     for (const folderName of folderPath) {
       currentParent = await getOrCreateFolder(drive, folderName, currentParent);
+      if (!firstFolderId) firstFolderId = currentParent;
     }
 
     const folderLink = currentParent ? `https://drive.google.com/drive/folders/${currentParent}` : null;
+    const firstFolderLink = firstFolderId ? `https://drive.google.com/drive/folders/${firstFolderId}` : folderLink;
 
     const uploadedFiles = [];
     const fileList = files.file ? (Array.isArray(files.file) ? files.file : [files.file]) : [];
@@ -110,6 +113,8 @@ module.exports = async function handler(req, res) {
       success: true,
       folderLink,
       folderId: currentParent,
+      firstFolderLink,
+      firstFolderId,
       files: uploadedFiles,
     });
   } catch (error) {
