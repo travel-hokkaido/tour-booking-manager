@@ -27,6 +27,22 @@ async function findFolder(drive, name, parentId) {
   return res.data.files && res.data.files.length > 0 ? res.data.files[0].id : null;
 }
 
+async function findFolderByGroupName(drive, groupName, parentId) {
+  let q = `mimeType='application/vnd.google-apps.folder' and trashed=false`;
+  if (parentId) q += ` and '${parentId}' in parents`;
+  const res = await drive.files.list({
+    q,
+    fields: 'files(id,name)',
+    supportsAllDrives: true,
+    includeItemsFromAllDrives: true,
+    pageSize: 1000,
+  });
+  const target = groupName.trim().toLowerCase();
+  const files = res.data.files || [];
+  const match = files.find(f => (f.name || '').toLowerCase().includes(target));
+  return match ? match.id : null;
+}
+
 async function createFolder(drive, name, parentId) {
   const meta = {
     name,
@@ -67,14 +83,24 @@ module.exports = async function handler(req, res) {
 
     const parentFolderId = fields.parentFolderId || null;
     const folderPath = fields.folderPath ? JSON.parse(fields.folderPath) : [];
+    const groupMatchName = fields.groupMatchName ? (Array.isArray(fields.groupMatchName) ? fields.groupMatchName[0] : fields.groupMatchName) : null;
 
     const auth = getAuth();
     const drive = google.drive({ version: 'v3', auth });
 
     let currentParent = parentFolderId || null;
     let firstFolderId = null;
-    for (const folderName of folderPath) {
-      currentParent = await getOrCreateFolder(drive, folderName, currentParent);
+    for (let i = 0; i < folderPath.length; i++) {
+      const folderName = folderPath[i];
+      if (i === 0 && groupMatchName) {
+        // Group folder: 1) exact name match, 2) group-name-contains match, 3) create
+        let id = await findFolder(drive, folderName, currentParent);
+        if (!id) id = await findFolderByGroupName(drive, groupMatchName, currentParent);
+        if (!id) id = await createFolder(drive, folderName, currentParent);
+        currentParent = id;
+      } else {
+        currentParent = await getOrCreateFolder(drive, folderName, currentParent);
+      }
       if (!firstFolderId) firstFolderId = currentParent;
     }
 
