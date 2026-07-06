@@ -537,19 +537,19 @@ function getItemFolderName(item){
 }
 
 async function getParentFolderId(g,gid){
+  const folders=getDriveFolders();
+  if(folders.length>1){
+    const parentId=await chooseDriveFolder();
+    if(parentId===null)return null;
+    return {id:parentId,isGroupFolder:false};
+  }else if(folders.length===1){
+    return {id:folders[0].id,isGroupFolder:false};
+  }
   if(g.drive_link){
     const match=g.drive_link.match(/folders\/([a-zA-Z0-9_-]+)/);
     if(match)return {id:match[1],isGroupFolder:true};
   }
-  const folders=getDriveFolders();
-  let parentId=null;
-  if(folders.length>1){
-    parentId=await chooseDriveFolder();
-    if(parentId===null)return null;
-  }else if(folders.length===1){
-    parentId=folders[0].id;
-  }
-  return {id:parentId,isGroupFolder:false};
+  return {id:null,isGroupFolder:false};
 }
 
 function handleDrop(event,gid,iid){
@@ -598,7 +598,7 @@ async function uploadInvoice(gid,iid){
       const folderPath=parent.isGroupFolder?[categoryName,itemFolderName]:[getGroupFolderName(g),categoryName,itemFolderName];
       const result=await uploadToServer(Array.from(input.files),folderPath,parent.id,parent.isGroupFolder?null:g.name);
       if(result.success){
-        if(!g.drive_link){await dbUpdateGroup(gid,{drive_link:result.firstFolderLink||result.folderLink})}
+        if(!parent.isGroupFolder&&result.firstFolderLink){await dbUpdateGroup(gid,{drive_link:result.firstFolderLink})}else if(!g.drive_link){await dbUpdateGroup(gid,{drive_link:result.firstFolderLink||result.folderLink})}
         const lastFile=result.files[result.files.length-1];
         if(lastFile)await dbUpdateItem(iid,{invoice_link:lastFile.link});
         customAlert('Invoice uploaded.');
@@ -619,7 +619,7 @@ async function handleGroupDrop(event,gid){
     const folderPath=parent.isGroupFolder?[]:[getGroupFolderName(g)];
     const result=await uploadToServer(Array.from(files),folderPath,parent.id,parent.isGroupFolder?null:g.name);
     if(result.success){
-      if(!g.drive_link)await dbUpdateGroup(gid,{drive_link:result.firstFolderLink||result.folderLink});
+      if(!parent.isGroupFolder&&result.firstFolderLink){await dbUpdateGroup(gid,{drive_link:result.firstFolderLink})}else if(!g.drive_link)await dbUpdateGroup(gid,{drive_link:result.firstFolderLink||result.folderLink});
       customAlert(`${files.length} file(s) uploaded to Drive folder:\n${getGroupFolderName(g)}`);
       await loadAll();
     }
@@ -637,7 +637,7 @@ async function uploadFiles(gid,iid,files){
     const folderPath=parent.isGroupFolder?[categoryName,itemFolderName]:[getGroupFolderName(g),categoryName,itemFolderName];
     const result=await uploadToServer(Array.from(files),folderPath,parent.id,parent.isGroupFolder?null:g.name);
     if(result.success){
-      if(!g.drive_link){const groupLink=result.firstFolderLink||result.folderLink;await dbUpdateGroup(gid,{drive_link:groupLink})}
+      if(!parent.isGroupFolder&&result.firstFolderLink){await dbUpdateGroup(gid,{drive_link:result.firstFolderLink})}else if(!g.drive_link){await dbUpdateGroup(gid,{drive_link:result.firstFolderLink||result.folderLink})}
       await dbUpdateItem(iid,{upload_folder_link:result.folderLink});
       customAlert(`${files.length} file(s) uploaded to:\n${getGroupFolderName(g)}/${categoryName}/${itemFolderName}`);
       await loadAll();
@@ -660,7 +660,7 @@ async function uploadForItem(gid,iid){
       const folderPath=parent.isGroupFolder?[categoryName,itemFolderName]:[getGroupFolderName(g),categoryName,itemFolderName];
       const result=await uploadToServer(Array.from(input.files),folderPath,parent.id,parent.isGroupFolder?null:g.name);
       if(result.success){
-        if(!g.drive_link)await dbUpdateGroup(gid,{drive_link:result.firstFolderLink||result.folderLink});
+        if(!parent.isGroupFolder&&result.firstFolderLink){await dbUpdateGroup(gid,{drive_link:result.firstFolderLink})}else if(!g.drive_link)await dbUpdateGroup(gid,{drive_link:result.firstFolderLink||result.folderLink});
         await dbUpdateItem(iid,{upload_folder_link:result.folderLink});
         customAlert(`${input.files.length} file(s) uploaded to:\n${getGroupFolderName(g)}/${categoryName}/${itemFolderName}`);
         await loadAll();
@@ -682,7 +682,7 @@ async function uploadForGroup(gid){
       const folderPath=parent.isGroupFolder?[]:[getGroupFolderName(g)];
       const result=await uploadToServer(Array.from(input.files),folderPath,parent.id,parent.isGroupFolder?null:g.name);
       if(result.success){
-        if(!g.drive_link)await dbUpdateGroup(gid,{drive_link:result.firstFolderLink||result.folderLink});
+        if(!parent.isGroupFolder&&result.firstFolderLink){await dbUpdateGroup(gid,{drive_link:result.firstFolderLink})}else if(!g.drive_link)await dbUpdateGroup(gid,{drive_link:result.firstFolderLink||result.folderLink});
         customAlert(`${input.files.length} file(s) uploaded to Drive folder:\n${getGroupFolderName(g)}`);
         await loadAll();
       }
