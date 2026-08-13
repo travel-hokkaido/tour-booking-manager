@@ -476,7 +476,14 @@ async function uploadToServer(files,folderPath,parentFolderId,groupMatchName){
     if(!initRes.ok){let msg='Upload init failed';try{const err=await initRes.json();msg=err.error||msg}catch(e){}throw new Error(msg)}
     const initData=await initRes.json();
     folderLink=initData.folderLink;folderId=initData.folderId;firstFolderLink=initData.firstFolderLink;firstFolderId=initData.firstFolderId;
-    const putRes=await fetch(initData.uploadUrl,{method:'PUT',headers:{'Content-Type':file.type||'application/octet-stream'},body:file});
+    const token=initData.accessToken;
+    // Browser initiates a resumable session (with CORS) then uploads the file bytes
+    const meta={name:file.name};if(initData.folderId)meta.parents=[initData.folderId];
+    const startRes=await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable&supportsAllDrives=true',{method:'POST',headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json; charset=UTF-8','X-Upload-Content-Type':file.type||'application/octet-stream'},body:JSON.stringify(meta)});
+    if(!startRes.ok){const t=await startRes.text().catch(()=>'');throw new Error('Upload init failed: '+(t||startRes.status))}
+    const uploadUrl=startRes.headers.get('location');
+    if(!uploadUrl)throw new Error('No upload URL');
+    const putRes=await fetch(uploadUrl,{method:'PUT',headers:{'Content-Type':file.type||'application/octet-stream'},body:file});
     if(!putRes.ok){const t=await putRes.text().catch(()=>'');throw new Error('Upload failed: '+(t||putRes.status))}
     const fileData=await putRes.json();
     uploaded.push({id:fileData.id,name:fileData.name||file.name,link:`https://drive.google.com/file/d/${fileData.id}/view`});
