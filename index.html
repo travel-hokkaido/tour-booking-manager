@@ -469,14 +469,19 @@ function getDriveFolders(){try{return JSON.parse(localStorage.getItem('drive_fol
 function saveDriveFolders(list){localStorage.setItem('drive_folders',JSON.stringify(list))}
 
 async function uploadToServer(files,folderPath,parentFolderId,groupMatchName){
-  const formData=new FormData();
-  for(const file of files){formData.append('file',file)}
-  formData.append('folderPath',JSON.stringify(folderPath));
-  if(parentFolderId)formData.append('parentFolderId',parentFolderId);
-  if(groupMatchName)formData.append('groupMatchName',groupMatchName);
-  const res=await fetch('/api/upload',{method:'POST',body:formData});
-  if(!res.ok){const err=await res.json();throw new Error(err.error||'Upload failed')}
-  return await res.json();
+  let folderLink=null,folderId=null,firstFolderLink=null,firstFolderId=null;
+  const uploaded=[];
+  for(const file of files){
+    const initRes=await fetch('/api/init-upload',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({folderPath,parentFolderId:parentFolderId||null,groupMatchName:groupMatchName||null,fileName:file.name,mimeType:file.type||'application/octet-stream'})});
+    if(!initRes.ok){let msg='Upload init failed';try{const err=await initRes.json();msg=err.error||msg}catch(e){}throw new Error(msg)}
+    const initData=await initRes.json();
+    folderLink=initData.folderLink;folderId=initData.folderId;firstFolderLink=initData.firstFolderLink;firstFolderId=initData.firstFolderId;
+    const putRes=await fetch(initData.uploadUrl,{method:'PUT',headers:{'Content-Type':file.type||'application/octet-stream'},body:file});
+    if(!putRes.ok){const t=await putRes.text().catch(()=>'');throw new Error('Upload failed: '+(t||putRes.status))}
+    const fileData=await putRes.json();
+    uploaded.push({id:fileData.id,name:fileData.name||file.name,link:`https://drive.google.com/file/d/${fileData.id}/view`});
+  }
+  return {success:true,folderLink,folderId,firstFolderLink,firstFolderId,files:uploaded};
 }
 
 async function setDriveFolder(){
